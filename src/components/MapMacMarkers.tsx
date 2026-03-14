@@ -1,4 +1,3 @@
-import { useState, useCallback } from 'react'
 import { Marker } from 'react-map-gl/maplibre'
 import { MAC_NAMES } from '../constants'
 import { MAC_POSITIONS } from '../data/locations'
@@ -9,23 +8,9 @@ interface MapMacMarkersProps {
 }
 
 export function MapMacMarkers({ agents }: MapMacMarkersProps) {
-  const [positions, setPositions] = useState<Record<string, { lng: number; lat: number }>>(() => {
-    const init: Record<string, { lng: number; lat: number }> = {}
-    Object.entries(MAC_POSITIONS).forEach(([id, pos]) => {
-      init[id] = { lng: pos.lng, lat: pos.lat }
-    })
-    return init
-  })
-
-  const handleDragEnd = useCallback((agentId: string, e: any) => {
-    const { lng, lat } = e.lngLat
-    setPositions(prev => ({ ...prev, [agentId]: { lng, lat } }))
-    console.log(`MAC_POSITION ${agentId}: [${lng.toFixed(6)}, ${lat.toFixed(6)}]  // lng, lat`)
-  }, [])
-
   return (
     <>
-      {Object.entries(positions).map(([agentId, pos]) => {
+      {Object.entries(MAC_POSITIONS).map(([agentId, pos]) => {
         const mac = MAC_NAMES[agentId]
         if (!mac) return null
         const agent = agents[agentId]
@@ -34,17 +19,10 @@ export function MapMacMarkers({ agents }: MapMacMarkersProps) {
         const Icon = mac.Icon
 
         return (
-          <Marker
-            key={agentId}
-            latitude={pos.lat}
-            longitude={pos.lng}
-            anchor="center"
-            draggable
-            onDragEnd={(e) => handleDragEnd(agentId, e)}
-          >
+          <Marker key={agentId} latitude={pos.lat} longitude={pos.lng} anchor="center">
             <div className={`relative ${isOffline ? 'animate-agent-death' : ''}`}>
               <div
-                className="w-8 h-8 flex items-center justify-center rounded-sm cursor-grab active:cursor-grabbing"
+                className="w-8 h-8 flex items-center justify-center rounded-sm"
                 style={{
                   backgroundColor: `${mac.color}20`,
                   border: `1.5px solid ${mac.color}`,
