@@ -90,6 +90,14 @@ const Index = () => {
     }
   }, [])
 
+  const handleKill = useCallback((agentId: string) => {
+    sendCommand({ type: 'kill', agent: agentId })
+  }, [sendCommand])
+
+  const handleRevive = useCallback((agentId: string) => {
+    sendCommand({ type: 'revive', agent: agentId })
+  }, [sendCommand])
+
   return (
     <LangProvider>
       <div className="h-screen w-screen flex flex-col bg-surface-primary overflow-hidden">
