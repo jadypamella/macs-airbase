@@ -29,8 +29,10 @@ const THREAT_LABELS: Record<string, { sv: string; en: string }> = {
 
 export function Header({ scenario, threatLevel, connected, eventCount, criticalCount }: HeaderProps) {
   const { lang, toggle } = useLang()
-  const tc = THREAT_COLORS[threatLevel] || THREAT_COLORS.GREEN
-  const tl = THREAT_LABELS[threatLevel] || THREAT_LABELS.GREEN
+  // Override threat level to RED if there are critical events
+  const effectiveThreat = criticalCount > 0 ? 'RED' : threatLevel
+  const tc = THREAT_COLORS[effectiveThreat] || THREAT_COLORS.GREEN
+  const tl = THREAT_LABELS[effectiveThreat] || THREAT_LABELS.GREEN
 
   const scenarioLabel = scenario
     ? (SCENARIO_NAMES[scenario]?.[lang] || scenario)
