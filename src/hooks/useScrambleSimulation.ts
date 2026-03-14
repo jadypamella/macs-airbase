@@ -374,7 +374,7 @@ export function useScrambleSimulation(): ScrambleSimulation {
         if (!ac.started && ac.phase === 'IDLE' && !ac.returning) return advancePhase(ac, acIdx, timestamp)
 
         // ── If returning flag set during CLIMB, initiate RTB once climb ends ──
-        if (ac.returning && (ac.phase === 'CLIMB' || ac.phase === 'ENROUTE' || ac.phase === 'ON_STATION') && ac.phase !== 'RTB') {
+        if (ac.returning && ['CLIMB', 'ENROUTE', 'ON_STATION'].includes(ac.phase)) {
           // For ON_STATION/ENROUTE, start RTB now
           if (ac.phase !== 'CLIMB') {
             rtbStartCache.current[ac.id] = ac.position
