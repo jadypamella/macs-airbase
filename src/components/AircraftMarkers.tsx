@@ -184,15 +184,14 @@ export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick }
     })
   }, [aircraft, overrides])
 
-  useEffect(() => {
-    if (!draggable) {
-      localStorage.setItem(AC_STORAGE_KEY, JSON.stringify(overrides))
-    }
-  }, [draggable, overrides])
-
   const handleDragEnd = useCallback((id: string, e: any) => {
     const { lng, lat } = e.lngLat
-    setOverrides(prev => ({ ...prev, [id]: [lng, lat] }))
+    setOverrides(prev => {
+      const next = { ...prev, [id]: [lng, lat] as [number, number] }
+      localStorage.setItem(AC_STORAGE_KEY, JSON.stringify(next))
+      console.log(`AIRCRAFT_POSITION ${id}: [${lng.toFixed(6)}, ${lat.toFixed(6)}]`)
+      return next
+    })
   }, [])
 
   return (
