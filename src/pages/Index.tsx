@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
 import { useSwarm } from '@/hooks/useSwarm'
 import { LangProvider } from '@/hooks/useLang'
 import { Header } from '@/components/Header'
@@ -21,6 +21,7 @@ const Index = () => {
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
+  const [gaugesOpen, setGaugesOpen] = useState(true)
 
   useEffect(() => {
     const lastScramble = events.filter(e => e.event_type === 'SCRAMBLE_ORDER').at(-1)
@@ -86,7 +87,21 @@ const Index = () => {
               flyToTarget={flyToTarget}
               onPopupClose={() => setFlyToTarget(null)}
             />
-            <WorldStateGauges worldState={worldState} />
+            <div className="relative">
+              {/* Gauges toggle */}
+              <button
+                onClick={() => setGaugesOpen(v => !v)}
+                className="absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center h-4 w-10 bg-surface-card/80 border border-white/10 border-t-0 rounded-b hover:bg-surface-elevated/80 transition-colors"
+                style={{ top: gaugesOpen ? 100 : 0 }}
+              >
+                {gaugesOpen
+                  ? <ChevronDown size={12} className="text-muted-foreground" />
+                  : <ChevronUp size={12} className="text-muted-foreground" />}
+              </button>
+              <div className={`transition-all duration-300 overflow-hidden ${gaugesOpen ? 'h-[100px]' : 'h-0'}`}>
+                <WorldStateGauges worldState={worldState} />
+              </div>
+            </div>
           </div>
 
           {/* Right toggle arrow */}
