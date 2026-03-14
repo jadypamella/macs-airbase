@@ -3,8 +3,18 @@ import { Marker } from 'react-map-gl/maplibre'
 import type { AircraftState, AircraftPhase } from '../constants'
 
 
+const AC_STORAGE_KEY = 'aircraft-marker-positions'
+
 interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
+  draggable?: boolean
+}
+
+function loadSavedAc(): Record<string, [number, number]> {
+  try {
+    const raw = localStorage.getItem(AC_STORAGE_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch { return {} }
 }
 
 /* ── Phase-based positions — all on the EAST side (apron/hangars area) ── */
