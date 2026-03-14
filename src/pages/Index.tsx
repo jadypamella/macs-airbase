@@ -19,6 +19,8 @@ const Index = () => {
   const [scrambleActive, setScrambleActive] = useState(false)
   const [flyToTarget, setFlyToTarget] = useState<{ lng: number; lat: number; event: SwarmEvent } | null>(null)
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
+  const [leftOpen, setLeftOpen] = useState(true)
+  const [rightOpen, setRightOpen] = useState(true)
 
   useEffect(() => {
     const lastScramble = events.filter(e => e.event_type === 'SCRAMBLE_ORDER').at(-1)
