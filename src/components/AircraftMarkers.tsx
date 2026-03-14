@@ -7,23 +7,20 @@ interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
 }
 
-// Combine both dispersal routes into a single path for ground positions
+// Positions along the main road/runway visible in satellite view (NW-SE line)
 const GROUND_POSITIONS: [number, number][] = [
-  // Along route bravo
-  [15.265, 56.267],
-  [15.255, 56.271],
-  [15.245, 56.275],
-  [15.230, 56.280],
-  // Along route charlie
-  [15.275, 56.263],
-  [15.285, 56.259],
-  [15.295, 56.255],
-  [15.305, 56.250],
-  // Near apron/runway
-  [15.260, 56.270],
-  [15.268, 56.268],
-  [15.262, 56.265],
-  [15.270, 56.266],
+  [15.2455, 56.2745],
+  [15.2490, 56.2730],
+  [15.2525, 56.2715],
+  [15.2555, 56.2700],
+  [15.2585, 56.2685],
+  [15.2615, 56.2670],
+  [15.2645, 56.2655],
+  [15.2675, 56.2640],
+  [15.2705, 56.2625],
+  [15.2735, 56.2610],
+  [15.2765, 56.2595],
+  [15.2795, 56.2580],
 ]
 
 const PHASE_COLORS: Record<string, string> = {
