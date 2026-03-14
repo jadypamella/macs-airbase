@@ -219,6 +219,16 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         >
           SATELLIT
         </button>
+        <button
+          onClick={() => setEditMode(prev => !prev)}
+          className={`px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors ${
+            editMode
+              ? 'bg-amber-500/20 border-amber-500/50 text-amber-400'
+              : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
+          }`}
+        >
+          {editMode ? '🔓 EDIT' : '🔒 EDIT'}
+        </button>
       </div>
 
       {/* Scanline overlay */}
