@@ -96,5 +96,19 @@ export function useSwarm() {
     }
   }, [])
 
-  return { events, agents, connected, scenario, worldState, threatLevel, sendCommand }
+  const controlAgent = useCallback(async (action: 'kill_agent' | 'revive_agent', agentId: string) => {
+    const baseUrl = (import.meta.env.VITE_WS_URL || 'wss://macs-airbase.duckdns.org/ws')
+      .replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '')
+    try {
+      await fetch(`${baseUrl}/api/control`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, agent_id: agentId }),
+      })
+    } catch (e) {
+      console.error('Control API error:', e)
+    }
+  }, [])
+
+  return { events, agents, connected, scenario, worldState, threatLevel, sendCommand, controlAgent }
 }
