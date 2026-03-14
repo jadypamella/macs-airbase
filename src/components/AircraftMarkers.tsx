@@ -274,30 +274,6 @@ export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick }
                 )}
               </div>
 
-              {/* Detailed tooltip on hover */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-6 hidden group-hover:block z-50">
-                <div
-                  className="px-2 py-1.5 text-[9px] font-mono whitespace-nowrap"
-                  style={{
-                    background: 'hsl(215 40% 10% / 0.98)',
-                    border: '1px solid hsl(220 14% 20% / 0.3)',
-                    backdropFilter: 'blur(12px)',
-                  }}
-                >
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="font-bold tracking-[0.1em]" style={{ color: 'hsl(var(--foreground))' }}>
-                      {ac.id} - {ac.phase}
-                    </span>
-                  </div>
-                  <div className="text-[8px] space-y-0.5" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                    <div>Fuel: {ac.fuel_pct.toFixed(0)}% | {ac.loadout}</div>
-                    {isAirborne && (
-                      <div>FL{Math.round(ac.altitude_ft / 100)} | {ac.speed_kts}kts | HDG {ac.heading}°</div>
-                    )}
-                    <div style={{ color: 'hsl(var(--muted))' }}>Pilot: {ac.pilot} | Pad: {ac.pad}</div>
-                  </div>
-                </div>
-              </div>
             </div>
           </Marker>
         )
