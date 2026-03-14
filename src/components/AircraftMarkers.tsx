@@ -167,7 +167,7 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
       const position = getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
       return { ...ac, position }
     })
-  }, [aircraft, time])
+  }, [aircraft])
 
   // Check if any aircraft is airborne (for orbit animation)
   const hasAirborne = useMemo(() => {
