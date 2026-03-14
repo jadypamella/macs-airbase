@@ -160,15 +160,15 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
 
   const [panelScreenPos, setPanelScreenPos] = useState<{ x: number; y: number } | null>(null)
 
-  // Fly to target when event is clicked
+  // Fly to target when event is clicked, then project to screen coords
   useEffect(() => {
     if (flyToTarget && mapRef.current) {
       mapRef.current.flyTo({ center: [flyToTarget.lng, flyToTarget.lat], zoom: 15, duration: 1200 })
-      // Project to screen after fly animation
       setTimeout(() => {
         if (mapRef.current) {
           const pt = mapRef.current.project([flyToTarget.lng, flyToTarget.lat])
-          setPanelScreenPos({ x: pt.x + 20, y: pt.y - 40 })
+          // Position panel centered above the marker
+          setPanelScreenPos({ x: pt.x - 120, y: pt.y - 160 })
         }
       }, 1300)
     } else {
