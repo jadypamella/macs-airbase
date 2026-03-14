@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import Map, { useMap } from 'react-map-gl/maplibre'
+import Map from 'react-map-gl/maplibre'
+import type { MapRef } from 'react-map-gl/maplibre'
 import { MapZones } from './MapZones'
 import { MapMacMarkers } from './MapMacMarkers'
 import { MapPulse } from './MapPulse'
