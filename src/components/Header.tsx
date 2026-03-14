@@ -40,9 +40,14 @@ export function Header({ scenario, threatLevel, connected, eventCount, criticalC
     <header className="h-[50px] bg-surface-primary border-b border-white/5 flex items-center px-4 gap-4 shrink-0">
       <img src="/macs_logo_white.png" alt="MACS AirBase" className="h-7" />
 
-      <span className="text-status-amber text-[11px] font-bold tracking-[0.15em] uppercase ml-2">
-        {scenarioLabel}
-      </span>
+      <div className="flex flex-col ml-1">
+        <span className="text-[8px] font-bold tracking-[0.15em] text-text-dim uppercase leading-none">
+          Multi-Agent Command System
+        </span>
+        <span className="text-status-amber text-[11px] font-bold tracking-[0.15em] uppercase leading-tight">
+          {scenarioLabel}
+        </span>
+      </div>
 
       <div className="flex-1" />
 
