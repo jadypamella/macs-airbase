@@ -156,17 +156,16 @@ export function TacticalMap({ events, agents, worldState, flyToTarget }: Tactica
     : SATELLITE_STYLE
 
   // Fly to target when event is clicked
-  const { current: mapInstance } = useMap()
   useEffect(() => {
-    if (flyToTarget && mapInstance) {
-      mapInstance.flyTo({ center: [flyToTarget.lng, flyToTarget.lat], zoom: 15, duration: 1200 })
+    if (flyToTarget && mapRef.current) {
+      mapRef.current.flyTo({ center: [flyToTarget.lng, flyToTarget.lat], zoom: 15, duration: 1200 })
     }
-  }, [flyToTarget, mapInstance])
+  }, [flyToTarget])
 
   return (
     <div className="relative flex-1 overflow-hidden">
       <Map
-        id="current"
+        ref={mapRef}
         initialViewState={{
           longitude: 15.265,
           latitude: 56.267,
