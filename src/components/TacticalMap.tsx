@@ -183,9 +183,9 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
       <Map
         ref={mapRef}
         initialViewState={{
-          longitude: 15.265,
-          latitude: 56.267,
-          zoom: 13.5,
+          longitude: 15.2715,
+          latitude: 56.2673,
+          zoom: 14.5,
           pitch: 40,
           bearing: -10,
         }}
