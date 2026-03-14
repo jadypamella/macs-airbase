@@ -27,7 +27,7 @@ function toValidPosition(value: unknown): { lng: number; lat: number } | null {
   return null
 }
 
-export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps) {
+export function MapMacMarkers({ agents, draggable = false, onAgentClick }: MapMacMarkersProps) {
   const [positions, setPositions] = useState<Record<string, { lng: number; lat: number }>>(() => {
     const init: Record<string, { lng: number; lat: number }> = {}
     Object.entries(MAC_POSITIONS).forEach(([id, pos]) => {

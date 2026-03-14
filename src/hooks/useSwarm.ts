@@ -3,6 +3,7 @@ import type { SwarmEvent, AgentState, WorldState } from '../constants'
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'wss://macs-airbase.duckdns.org/ws'
 const MAX_EVENTS = 300
+const CONTROL_API_ENDPOINTS = ['/api/control', 'https://macs-airbase.duckdns.org/api/control'] as const
 
 export function useSwarm() {
   const [events, setEvents] = useState<SwarmEvent[]>([])
