@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { supabase } from '@/integrations/supabase/client'
 import type { SwarmEvent, AgentState, WorldState } from '../constants'
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'wss://macs-airbase.duckdns.org/ws'
 const MAX_EVENTS = 300
-const CONTROL_API_ENDPOINTS = ['/api/control', 'https://macs-airbase.duckdns.org/api/control'] as const
 
 export function useSwarm() {
   const [events, setEvents] = useState<SwarmEvent[]>([])
@@ -99,30 +99,22 @@ export function useSwarm() {
 
   const controlAgent = useCallback(async (action: 'kill_agent' | 'revive_agent', agentId: string) => {
     const body = { action, agent_id: agentId }
-    let lastError: unknown = null
-
-    for (const url of CONTROL_API_ENDPOINTS) {
-      try {
-        console.log('Control API request:', url, body)
-        const res = await fetch(url, {
+    console.log('Control API request (via proxy):', body)
+    try {
+      const { data, error } = await supabase.functions.invoke('api-proxy', {
+        body: {
+          endpoint: '/api/control',
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        })
-        const data = await res.json()
-        if (!res.ok || data?.ok === false) {
-          throw new Error(`Control API failed (${res.status}): ${JSON.stringify(data)}`)
-        }
-        console.log('Control API response:', res.status, data)
-        return data
-      } catch (e) {
-        lastError = e
-        console.warn(`Control API failed at ${url}:`, e)
-      }
+          body,
+        },
+      })
+      if (error) throw error
+      console.log('Control API response:', data)
+      return data
+    } catch (e) {
+      console.error('Control API error:', e)
+      return null
     }
-
-    console.error('Control API error:', lastError)
-    return null
   }, [])
 
   return { events, agents, connected, scenario, worldState, threatLevel, sendCommand, controlAgent }
