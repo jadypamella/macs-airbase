@@ -8,20 +8,20 @@ interface AircraftMarkersProps {
 }
 
 // Positions along the takeoff runway centerline (west ↔ east)
-// Positions along the diagonal dispersal road (SW ↔ NE)
+// Positions along the main runway centerline (SW → NE)
 const GROUND_POSITIONS: [number, number][] = [
-  [15.2500, 56.2620],
-  [15.2530, 56.2635],
-  [15.2560, 56.2650],
-  [15.2590, 56.2665],
-  [15.2620, 56.2680],
-  [15.2650, 56.2695],
-  [15.2680, 56.2710],
-  [15.2710, 56.2725],
-  [15.2740, 56.2740],
-  [15.2770, 56.2755],
-  [15.2800, 56.2770],
-  [15.2830, 56.2785],
+  [15.2450, 56.2635],
+  [15.2490, 56.2643],
+  [15.2530, 56.2651],
+  [15.2570, 56.2659],
+  [15.2610, 56.2667],
+  [15.2650, 56.2675],
+  [15.2690, 56.2683],
+  [15.2730, 56.2691],
+  [15.2770, 56.2699],
+  [15.2810, 56.2707],
+  [15.2850, 56.2715],
+  [15.2890, 56.2723],
 ]
 
 const PHASE_COLORS: Record<string, string> = {
