@@ -163,14 +163,15 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
   }, [onPopupClose])
 
   const handleCopyAllPositions = useCallback(() => {
-    // Gather MAC positions from MapMacMarkers via DOM data attributes
-    const macMarkers = document.querySelectorAll('[data-mac-positions]')
-    let macText = ''
-    macMarkers.forEach(el => {
-      macText = el.getAttribute('data-mac-positions') || ''
-    })
+    // MAC positions from localStorage (saved by MapMacMarkers on drag)
+    const macRaw = localStorage.getItem('mac-marker-positions')
+    const macPositions = macRaw ? JSON.parse(macRaw) : {}
+    const macText = Object.entries(macPositions).map(([id, pos]) => {
+      const p = pos as { lng: number; lat: number }
+      return `  ${id}: { lat: ${p.lat.toFixed(6)}, lng: ${p.lng.toFixed(6)} }`
+    }).join(',\n')
 
-    // Gather aircraft positions from localStorage
+    // Aircraft positions from localStorage
     const acRaw = localStorage.getItem('aircraft-marker-positions')
     const acPositions = acRaw ? JSON.parse(acRaw) : {}
     const acText = Object.entries(acPositions).map(([id, pos]) => {
@@ -178,9 +179,12 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
       return `  '${id}': [${p[0].toFixed(6)}, ${p[1].toFixed(6)}]`
     }).join(',\n')
 
-    const output = `MAC_POSITIONS:\n${macText}\n\nAIRCRAFT_OVERRIDES:\n{\n${acText}\n}`
+    const parts: string[] = []
+    if (macText) parts.push(`MAC_POSITIONS:\n{\n${macText}\n}`)
+    if (acText) parts.push(`AIRCRAFT_OVERRIDES:\n{\n${acText}\n}`)
+    const output = parts.join('\n\n') || 'No positions changed yet. Drag markers first.'
     navigator.clipboard.writeText(output)
-    alert('All positions copied to clipboard!')
+    alert('Positions copied to clipboard!')
     console.log('📍 ALL POSITIONS:', output)
   }, [])
 
