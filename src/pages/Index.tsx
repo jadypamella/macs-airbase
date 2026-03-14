@@ -31,7 +31,7 @@ function extractAircraftId(event: SwarmEvent): string | null {
 }
 
 const Index = () => {
-  const { events, agents, connected, scenario, worldState, threatLevel, sendCommand } = useSwarm()
+  const { events, agents, connected, scenario, worldState, threatLevel, controlAgent } = useSwarm()
   const [scrambleActive, setScrambleActive] = useState(false)
   const [flyToTarget, setFlyToTarget] = useState<{ lng: number; lat: number; event: SwarmEvent } | null>(null)
 
