@@ -198,17 +198,6 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
           }`}
         >
           SATELLIT
-        </button>
-        <button
-          onClick={() => setShow3D(p => !p)}
-          className={`px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors ${
-            show3D
-              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
-              : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
-          }`}
-        >
-          3D
-        </button>
       </div>
 
       {/* Scanline overlay */}
