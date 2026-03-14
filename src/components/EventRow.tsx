@@ -13,7 +13,7 @@ interface EventRowProps {
   onClick?: (event: SwarmEvent) => void
 }
 
-export function EventRow({ event }: EventRowProps) {
+export function EventRow({ event, onClick }: EventRowProps) {
   const { lang } = useLang()
   const mac = MAC_NAMES[event.source]
   const severityColor = SEVERITY_COLORS[event.severity] || '#4b5563'
