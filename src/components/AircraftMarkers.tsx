@@ -182,10 +182,8 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
             latitude={lat}
             longitude={lng}
             anchor="center"
-            draggable
-            onDragEnd={(e) => handleDragEnd(ac.id, e)}
           >
-            <div className="relative group cursor-grab active:cursor-grabbing">
+            <div className="relative group cursor-pointer">
               {/* Aircraft icon */}
               <div
                 className="relative transition-transform duration-300"

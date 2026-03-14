@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { Marker } from 'react-map-gl/maplibre'
 import { Marker } from 'react-map-gl/maplibre'
 import { MAC_NAMES } from '../constants'
 import { MAC_POSITIONS } from '../data/locations'
