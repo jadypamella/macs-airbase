@@ -9,17 +9,9 @@ import { WorldStateGauges } from '@/components/WorldStateGauges'
 import { TimelineBar } from '@/components/TimelineBar'
 import { ScrambleOverlay } from '@/components/ScrambleOverlay'
 import { EmergenceGraph } from '@/components/EmergenceGraph'
-import { EVENT_LOCATION_MAP, LOCATIONS, MAC_POSITIONS } from '@/data/locations'
+import { MAC_POSITIONS } from '@/data/locations'
 import { MAC_NAMES, SEVERITY_COLORS } from '@/constants'
 import type { SwarmEvent } from '@/constants'
-
-const AIRCRAFT_STORAGE_KEY = 'aircraft-marker-positions'
-
-function extractAircraftId(event: SwarmEvent): string | null {
-  const msg = event.payload?.message || ''
-  const match = msg.match(/Gripen-\d+/i)
-  return match ? `Gripen-${match[0].split('-')[1]}` : null
-}
 
 const Index = () => {
   const { events, agents, connected, scenario, worldState, threatLevel, controlAgent } = useSwarm()
