@@ -7,20 +7,19 @@ interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
 }
 
-// Positions along the takeoff runway centerline (west ↔ east)
-// Linha de dispersão solicitada (SW → NE), ajustável por 2 pontos
-const RED_LINE_START: [number, number] = [15.2595, 56.2618]
-const RED_LINE_END: [number, number] = [15.2758, 56.2706]
+// Dispersal line (SW → NE) matching the taxiway/dispersal road
+const RED_LINE_START: [number, number] = [15.2480, 56.2590]
+const RED_LINE_END: [number, number] = [15.2780, 56.2740]
 
 const PHASE_COLORS: Record<string, string> = {
-  AIRBORNE: '#22d3ee',
+  AIRBORNE: '#a3e635',
   RTB: '#facc15',
   TAXI: '#fb923c',
-  TAKEOFF: '#22d3ee',
+  TAKEOFF: '#a3e635',
   LANDING: '#facc15',
   FUELING: '#f97316',
   ARMING: '#ef4444',
-  SHELTER: '#64748b',
+  SHELTER: '#94a3b8',
   PRE_FLIGHT: '#a3e635',
   POST_FLIGHT: '#94a3b8',
   MAINTENANCE: '#8b5cf6',
