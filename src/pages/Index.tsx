@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useSwarm } from './hooks/useSwarm'
-import { Header } from './components/Header'
-import { MacSidebar } from './components/MacSidebar'
-import { TacticalMap } from './components/TacticalMap'
-import { EventFeed } from './components/EventFeed'
-import { WorldStateGauges } from './components/WorldStateGauges'
-import { TimelineBar } from './components/TimelineBar'
-import { ScrambleOverlay } from './components/ScrambleOverlay'
-import { EmergenceGraph } from './components/EmergenceGraph'
+import { useSwarm } from '@/hooks/useSwarm'
+import { Header } from '@/components/Header'
+import { MacSidebar } from '@/components/MacSidebar'
+import { TacticalMap } from '@/components/TacticalMap'
+import { EventFeed } from '@/components/EventFeed'
+import { WorldStateGauges } from '@/components/WorldStateGauges'
+import { TimelineBar } from '@/components/TimelineBar'
+import { ScrambleOverlay } from '@/components/ScrambleOverlay'
+import { EmergenceGraph } from '@/components/EmergenceGraph'
 
 const Index = () => {
   const { events, agents, connected, scenario, worldState, threatLevel } = useSwarm()
