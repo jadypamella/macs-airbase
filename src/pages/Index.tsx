@@ -87,7 +87,21 @@ const Index = () => {
               flyToTarget={flyToTarget}
               onPopupClose={() => setFlyToTarget(null)}
             />
-            <WorldStateGauges worldState={worldState} />
+            <div className="relative">
+              {/* Gauges toggle */}
+              <button
+                onClick={() => setGaugesOpen(v => !v)}
+                className="absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center h-4 w-10 bg-surface-card/80 border border-white/10 border-t-0 rounded-b hover:bg-surface-elevated/80 transition-colors"
+                style={{ top: gaugesOpen ? 100 : 0 }}
+              >
+                {gaugesOpen
+                  ? <ChevronDown size={12} className="text-muted-foreground" />
+                  : <ChevronUp size={12} className="text-muted-foreground" />}
+              </button>
+              <div className={`transition-all duration-300 overflow-hidden ${gaugesOpen ? 'h-[100px]' : 'h-0'}`}>
+                <WorldStateGauges worldState={worldState} />
+              </div>
+            </div>
           </div>
 
           {/* Right toggle arrow */}
