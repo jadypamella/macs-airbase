@@ -14,7 +14,7 @@ interface EventFeedProps {
 const SEVERITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 const AGENT_IDS = ['OPS', 'FUEL', 'ARMING', 'MAINT', 'THREAT']
 
-export function EventFeed({ events, onEventClick }: EventFeedProps) {
+export function EventFeed({ events, onEventClick, expandedEventId }: EventFeedProps) {
   const { lang } = useLang()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [search, setSearch] = useState('')
