@@ -76,7 +76,7 @@ const Index = () => {
 
           <div className="w-[280px] flex flex-col shrink-0 overflow-hidden bg-surface-card border-l border-white/5">
             <div className="flex-1 overflow-hidden">
-              <EventFeed events={events} onEventClick={handleEventClick} />
+              <EventFeed events={events} onEventClick={handleEventClick} expandedEventId={expandedEventId} />
             </div>
             <div className="border-t border-white/5">
               <EmergenceGraph events={events} />
