@@ -281,7 +281,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         >
           SATELLITE
         </button>
-        <button
+        {/* <button
           onClick={() => setEditMode(prev => !prev)}
           className={`px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors ${
             editMode
@@ -298,7 +298,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
           >
             COPY
           </button>
-        )}
+        )} */}
       </div>
 
       {/* Scanline overlay */}
