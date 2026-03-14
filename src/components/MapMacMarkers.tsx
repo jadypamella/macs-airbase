@@ -1,5 +1,5 @@
 import { Marker } from 'react-map-gl/maplibre'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { MAC_NAMES } from '../constants'
 import { MAC_POSITIONS } from '../data/locations'
 import type { AgentState } from '../constants'
@@ -28,16 +28,15 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
     return init
   })
 
-  // Save when drag mode is turned off
-  useEffect(() => {
-    if (!draggable) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(positions))
-    }
-  }, [draggable, positions])
-
   const handleDragEnd = useCallback((agentId: string, e: any) => {
     const { lng, lat } = e.lngLat
-    setPositions(prev => ({ ...prev, [agentId]: { lng, lat } }))
+    setPositions(prev => {
+      const next = { ...prev, [agentId]: { lng, lat } }
+      // Save immediately to localStorage
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      console.log(`MAC_POSITION ${agentId}: { lng: ${lng.toFixed(6)}, lat: ${lat.toFixed(6)} }`)
+      return next
+    })
   }, [])
 
   return (
