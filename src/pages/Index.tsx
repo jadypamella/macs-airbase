@@ -91,12 +91,12 @@ const Index = () => {
   }, [])
 
   const handleKill = useCallback((agentId: string) => {
-    sendCommand({ type: 'kill', agent: agentId })
-  }, [sendCommand])
+    controlAgent('kill_agent', agentId)
+  }, [controlAgent])
 
   const handleRevive = useCallback((agentId: string) => {
-    sendCommand({ type: 'revive', agent: agentId })
-  }, [sendCommand])
+    controlAgent('revive_agent', agentId)
+  }, [controlAgent])
 
   return (
     <LangProvider>
