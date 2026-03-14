@@ -91,8 +91,7 @@ const Index = () => {
               {/* Gauges toggle */}
               <button
                 onClick={() => setGaugesOpen(v => !v)}
-                className="absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center h-4 w-10 bg-surface-card/80 border border-white/10 border-t-0 rounded-b hover:bg-surface-elevated/80 transition-colors"
-                style={{ top: gaugesOpen ? 100 : 0 }}
+                className="absolute left-1/2 -translate-x-1/2 -top-4 z-20 flex items-center justify-center h-4 w-10 bg-surface-card/80 border border-white/10 border-b-0 rounded-t hover:bg-surface-elevated/80 transition-colors"
               >
                 {gaugesOpen
                   ? <ChevronDown size={12} className="text-muted-foreground" />
