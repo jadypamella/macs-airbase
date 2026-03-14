@@ -38,33 +38,11 @@ const Index = () => {
   const criticalCount = events.filter(e => e.severity === 'CRITICAL').length
 
   const handleEventClick = useCallback((event: SwarmEvent) => {
-    let target: { lng: number; lat: number } | null = null
-
-    // 1) Aircraft saved position (if event references Gripen-XX)
-    const aircraftId = extractAircraftId(event)
-    if (aircraftId) {
-      try {
-        const raw = localStorage.getItem(AIRCRAFT_STORAGE_KEY)
-        const saved = raw ? JSON.parse(raw) as Record<string, [number, number]> : {}
-        const pos = saved[aircraftId]
-        if (pos) target = { lng: pos[0], lat: pos[1] }
-      } catch {
-        // ignore parse errors
-      }
-    }
-
-    // 2) Use MAC_POSITIONS for agent source (most accurate)
-    if (!target) {
-      const macPos = MAC_POSITIONS[event.source]
-      if (macPos) target = { lng: macPos.lng, lat: macPos.lat }
-    }
-
-    // 3) Existing static fallback by event type
-    if (!target) {
-      const locKey = EVENT_LOCATION_MAP[event.event_type]
-      const loc = locKey ? LOCATIONS[locKey] : null
-      if (loc) target = { lng: loc.lng, lat: loc.lat }
-    }
+    // Always fly to the MAC agent position for the event source
+    const macPos = MAC_POSITIONS[event.source]
+    const target = macPos
+      ? { lng: macPos.lng, lat: macPos.lat }
+      : null
 
     if (target) {
       setFlyToTarget({ lng: target.lng, lat: target.lat, event })
