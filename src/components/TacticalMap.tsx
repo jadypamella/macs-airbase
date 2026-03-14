@@ -195,13 +195,21 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
             longitude={flyToTarget.lng}
             anchor="bottom"
             onClose={() => onPopupClose?.()}
-            closeButton={true}
+            closeButton={false}
             closeOnClick={false}
-            className="event-popup"
+            maxWidth="260px"
           >
-            <div className="bg-surface-card/95 border border-white/10 p-2 text-[9px] min-w-[200px] max-w-[280px] backdrop-blur-sm">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-bold text-text-primary text-[10px]">
+            <div
+              className="p-2.5 text-[9px] font-mono"
+              style={{
+                background: 'hsl(215 40% 8% / 0.95)',
+                border: '1px solid hsl(220 14% 30% / 0.3)',
+                backdropFilter: 'blur(8px)',
+                maxWidth: '250px',
+              }}
+            >
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="font-bold text-[10px]" style={{ color: '#e2e8f0' }}>
                   {flyToTarget.event.source}
                 </span>
                 <span
@@ -213,19 +221,20 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
                 >
                   {flyToTarget.event.severity}
                 </span>
+                <button
+                  onClick={() => onPopupClose?.()}
+                  className="text-[12px] leading-none opacity-50 hover:opacity-100"
+                  style={{ color: '#94a3b8' }}
+                >
+                  ✕
+                </button>
               </div>
-              <p className="text-text-muted text-[10px] leading-snug mb-1.5">
+              <p className="text-[10px] leading-snug mb-1.5" style={{ color: '#94a3b8' }}>
                 {flyToTarget.event.payload?.message || flyToTarget.event.event_type}
               </p>
-              <div className="space-y-0.5 text-text-dim">
-                <div>TYPE: <span className="text-text-muted font-mono">{flyToTarget.event.event_type}</span></div>
-                <div>DOMAIN: <span className="text-text-muted font-mono">{flyToTarget.event.domain}</span></div>
-                {flyToTarget.event.payload && Object.entries(flyToTarget.event.payload)
-                  .filter(([k]) => k !== 'message')
-                  .slice(0, 5)
-                  .map(([k, v]) => (
-                    <div key={k}>{k.toUpperCase()}: <span className="text-text-muted font-mono">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span></div>
-                  ))}
+              <div className="space-y-0.5" style={{ color: '#64748b' }}>
+                <div>TYPE: <span style={{ color: '#94a3b8' }}>{flyToTarget.event.event_type}</span></div>
+                <div>DOMAIN: <span style={{ color: '#94a3b8' }}>{flyToTarget.event.domain}</span></div>
               </div>
             </div>
           </Popup>
