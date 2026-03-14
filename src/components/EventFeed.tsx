@@ -84,9 +84,9 @@ export function EventFeed({ events, onEventClick }: EventFeedProps) {
     if (activeSeverities.size > 0 && !activeSeverities.has(e.severity)) return false
     if (activeAgents.size > 0 && !activeAgents.has(e.source) && e.source !== 'SYSTEM') return false
     if (activeAircraft.size > 0) {
-      const msg = e.payload?.message || ''
-      const mentions = msg.match(/Gripen-\d+/gi) || []
-      if (!mentions.some((m: string) => activeAircraft.has(m))) return false
+      const msg = (e.payload?.message || '').toLowerCase()
+      const found = Array.from(activeAircraft).some(acId => msg.includes(acId.toLowerCase()))
+      if (!found) return false
     }
     if (search) {
       const q = search.toLowerCase()
