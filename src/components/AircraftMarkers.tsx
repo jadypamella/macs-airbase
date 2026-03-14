@@ -7,20 +7,20 @@ interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
 }
 
-// Positions along the main road/runway visible in satellite view (NW-SE line)
+// Positions along the main road (runs SW to NE through the base)
 const GROUND_POSITIONS: [number, number][] = [
-  [15.2455, 56.2745],
-  [15.2490, 56.2730],
-  [15.2525, 56.2715],
-  [15.2555, 56.2700],
-  [15.2585, 56.2685],
-  [15.2615, 56.2670],
-  [15.2645, 56.2655],
-  [15.2675, 56.2640],
-  [15.2705, 56.2625],
-  [15.2735, 56.2610],
-  [15.2765, 56.2595],
-  [15.2795, 56.2580],
+  [15.2480, 56.2620],
+  [15.2510, 56.2630],
+  [15.2540, 56.2640],
+  [15.2570, 56.2650],
+  [15.2600, 56.2655],
+  [15.2630, 56.2660],
+  [15.2660, 56.2665],
+  [15.2690, 56.2670],
+  [15.2720, 56.2672],
+  [15.2750, 56.2674],
+  [15.2780, 56.2676],
+  [15.2810, 56.2678],
 ]
 
 const PHASE_COLORS: Record<string, string> = {
