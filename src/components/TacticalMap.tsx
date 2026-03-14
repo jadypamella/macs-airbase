@@ -16,7 +16,7 @@ import { AircraftMarkers } from './AircraftMarkers'
 import { MapBuildings3D } from './MapBuildings3D'
 import { ThreatHeatmap } from './ThreatHeatmap'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '../data/locations'
-import { detectCrossDomainRefs, MAC_NAMES } from '../constants'
+import { detectCrossDomainRefs, MAC_NAMES, SEVERITY_COLORS } from '../constants'
 import type { AgentState, SwarmEvent, WorldState } from '../constants'
 
 interface TacticalMapProps {
