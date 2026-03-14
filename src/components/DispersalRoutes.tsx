@@ -35,7 +35,7 @@ export function DispersalRoutes({ active }: DispersalRoutesProps) {
             'line-color': '#06b6d4',
             'line-width': 3,
             'line-dasharray': [8, 4],
-          } as LinePaint}
+          } as any}
         />
       </Source>
       {/* Alternate base markers */}

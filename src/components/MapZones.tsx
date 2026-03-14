@@ -50,7 +50,7 @@ export function MapZones({ zoneStatuses }: MapZonesProps) {
             STATUS_COLORS.active,
           ],
           'fill-opacity': 1,
-        } as FillPaint}
+        } as any}
       />
       <Layer
         id="zone-border"
@@ -67,7 +67,7 @@ export function MapZones({ zoneStatuses }: MapZonesProps) {
           ],
           'line-width': 1.5,
           'line-dasharray': [4, 2],
-        } as LinePaint}
+        } as any}
       />
     </Source>
   )
