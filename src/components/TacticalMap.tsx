@@ -118,6 +118,13 @@ export function TacticalMap({ events, agents }: TacticalMapProps) {
     events.forEach(processNewEvent)
   }, [events, processNewEvent])
 
+  const MAP_STYLES = useMemo(() => ({
+    dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+    satellite: 'https://api.maptiler.com/maps/hybrid/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+  }), [])
+
+  const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('dark')
+
   return (
     <div className="relative flex-1 overflow-hidden">
       <Map
@@ -129,7 +136,7 @@ export function TacticalMap({ events, agents }: TacticalMapProps) {
           bearing: -10,
         }}
         style={{ width: '100%', height: '100%' }}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        mapStyle={MAP_STYLES[mapStyle]}
       >
         <MapZones zoneStatuses={zoneStatuses} />
         <DispersalRoutes active={dispersalActive} />
