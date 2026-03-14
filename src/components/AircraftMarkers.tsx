@@ -27,20 +27,10 @@ const PHASE_COLORS: Record<string, string> = {
   GROUNDED: '#ef4444',
 }
 
-// Runway endpoints (SW → NE)
-const RUNWAY_START: [number, number] = [15.2450, 56.2635]
-const RUNWAY_END: [number, number] = [15.2890, 56.2723]
-
-function getAircraftPosition(ac: AircraftState, index: number, total: number): [number, number] {
-  if (ac.phase === 'AIRBORNE' || ac.phase === 'RTB') {
-    const rad = (ac.heading * Math.PI) / 180
-    const dist = 0.02 + (index * 0.008)
-    return [15.265 + Math.sin(rad) * dist, 56.267 + Math.cos(rad) * dist * 0.6]
-  }
-  // Distribute evenly along the full runway
+function getAircraftPosition(index: number, total: number): [number, number] {
   const t = total > 1 ? index / (total - 1) : 0.5
-  const lng = RUNWAY_START[0] + (RUNWAY_END[0] - RUNWAY_START[0]) * t
-  const lat = RUNWAY_START[1] + (RUNWAY_END[1] - RUNWAY_START[1]) * t
+  const lng = RED_LINE_START[0] + (RED_LINE_END[0] - RED_LINE_START[0]) * t
+  const lat = RED_LINE_START[1] + (RED_LINE_END[1] - RED_LINE_START[1]) * t
   return [lng, lat]
 }
 
