@@ -219,7 +219,7 @@ export function EventFeed({ events, onEventClick, expandedEventId }: EventFeedPr
           </div>
         ) : (
           [...filtered].reverse().slice(0, 80).map(event => (
-            <EventRow key={event.id} event={event} onClick={onEventClick} />
+            <EventRow key={event.id} event={event} onClick={onEventClick} expanded={expandedEventId === event.id} />
           ))
         )}
       </div>
