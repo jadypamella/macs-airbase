@@ -11,13 +11,15 @@ import type { ThreatTrack } from './ThreatTracks'
 import { ConnectionArcs } from './ConnectionArcs'
 import type { Arc } from './ConnectionArcs'
 import { DispersalRoutes } from './DispersalRoutes'
+import { AircraftMarkers } from './AircraftMarkers'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '../data/locations'
 import { detectCrossDomainRefs, MAC_NAMES } from '../constants'
-import type { AgentState, SwarmEvent } from '../constants'
+import type { AgentState, SwarmEvent, WorldState } from '../constants'
 
 interface TacticalMapProps {
   events: SwarmEvent[]
   agents: Record<string, AgentState>
+  worldState: WorldState | null
 }
 
 const PULSE_COLORS: Record<string, string> = {
@@ -29,7 +31,7 @@ const PULSE_COLORS: Record<string, string> = {
   TASKING_ORDER: '#3b82f6',
 }
 
-export function TacticalMap({ events, agents }: TacticalMapProps) {
+export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
   const [pulseRings, setPulseRings] = useState<PulseRing[]>([])
   const [threatTracks, setThreatTracks] = useState<ThreatTrack[]>([])
   const [arcs, setArcs] = useState<Arc[]>([])
@@ -141,7 +143,7 @@ export function TacticalMap({ events, agents }: TacticalMapProps) {
     ],
   }), [])
 
-  const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('dark')
+  const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('satellite')
 
   const activeStyle = mapStyle === 'dark'
     ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
@@ -167,6 +169,7 @@ export function TacticalMap({ events, agents }: TacticalMapProps) {
         <ThreatTracks tracks={threatTracks} />
         <RadarSweep ewJamming={ewJamming} />
         <ConnectionArcs arcs={arcs} />
+        <AircraftMarkers aircraft={worldState?.aircraft} />
       </Map>
 
       {/* Map style toggle */}
