@@ -204,8 +204,8 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
       </Map>
 
       {/* Draggable event detail panel */}
-      {flyToTarget?.event && (
-        <DraggableEventPanel event={flyToTarget.event} onClose={() => onPopupClose?.()} />
+      {flyToTarget?.event && panelScreenPos && (
+        <DraggableEventPanel event={flyToTarget.event} onClose={() => { onPopupClose?.(); setPanelScreenPos(null) }} initialPos={panelScreenPos} />
       )}
 
       {/* Map style toggle */}

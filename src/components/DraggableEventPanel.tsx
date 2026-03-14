@@ -5,10 +5,11 @@ import type { SwarmEvent } from '../constants'
 interface Props {
   event: SwarmEvent
   onClose: () => void
+  initialPos?: { x: number; y: number }
 }
 
-export function DraggableEventPanel({ event, onClose }: Props) {
-  const [pos, setPos] = useState({ x: 16, y: 60 })
+export function DraggableEventPanel({ event, onClose, initialPos }: Props) {
+  const [pos, setPos] = useState(initialPos || { x: 16, y: 60 })
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null)
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
