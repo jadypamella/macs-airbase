@@ -1,10 +1,20 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useCallback, useEffect } from 'react'
 import { Marker } from 'react-map-gl/maplibre'
 import type { AircraftState, AircraftPhase } from '../constants'
 
 
+const AC_STORAGE_KEY = 'aircraft-marker-positions'
+
 interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
+  draggable?: boolean
+}
+
+function loadSavedAc(): Record<string, [number, number]> {
+  try {
+    const raw = localStorage.getItem(AC_STORAGE_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch { return {} }
 }
 
 /* ── Phase-based positions — all on the EAST side (apron/hangars area) ── */
@@ -154,7 +164,12 @@ const POSITION_OVERRIDES: Record<string, [number, number]> = {
   'Gripen-05': [15.274118, 56.271807],
 }
 
-export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
+export function AircraftMarkers({ aircraft, draggable = false }: AircraftMarkersProps) {
+  const [overrides, setOverrides] = useState<Record<string, [number, number]>>(() => ({
+    ...POSITION_OVERRIDES,
+    ...loadSavedAc(),
+  }))
+
   const markers = useMemo(() => {
     if (!aircraft) return []
     const entries = Object.values(aircraft).filter(ac => GROUND_PHASES.has(ac.phase))
@@ -163,10 +178,21 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
       const phase = ac.phase
       const slotIndex = phaseCounters[phase] || 0
       phaseCounters[phase] = slotIndex + 1
-      const position = POSITION_OVERRIDES[ac.id] || getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
+      const position = overrides[ac.id] || getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
       return { ...ac, position }
     })
-  }, [aircraft])
+  }, [aircraft, overrides])
+
+  useEffect(() => {
+    if (!draggable) {
+      localStorage.setItem(AC_STORAGE_KEY, JSON.stringify(overrides))
+    }
+  }, [draggable, overrides])
+
+  const handleDragEnd = useCallback((id: string, e: any) => {
+    const { lng, lat } = e.lngLat
+    setOverrides(prev => ({ ...prev, [id]: [lng, lat] }))
+  }, [])
 
   return (
     <>
@@ -182,6 +208,8 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
             latitude={lat}
             longitude={lng}
             anchor="center"
+            draggable={draggable}
+            onDragEnd={(e) => handleDragEnd(ac.id, e)}
           >
             <div className="relative group cursor-pointer">
               {/* Aircraft icon */}

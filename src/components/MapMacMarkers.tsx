@@ -1,16 +1,48 @@
 import { Marker } from 'react-map-gl/maplibre'
+import { useState, useCallback, useEffect } from 'react'
 import { MAC_NAMES } from '../constants'
 import { MAC_POSITIONS } from '../data/locations'
 import type { AgentState } from '../constants'
 
+const STORAGE_KEY = 'mac-marker-positions'
+
 interface MapMacMarkersProps {
   agents: Record<string, AgentState>
+  draggable?: boolean
 }
 
-export function MapMacMarkers({ agents }: MapMacMarkersProps) {
+function loadSaved(): Record<string, { lng: number; lat: number }> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch { return {} }
+}
+
+export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps) {
+  const [positions, setPositions] = useState<Record<string, { lng: number; lat: number }>>(() => {
+    const saved = loadSaved()
+    const init: Record<string, { lng: number; lat: number }> = {}
+    Object.entries(MAC_POSITIONS).forEach(([id, pos]) => {
+      init[id] = saved[id] || { lng: pos.lng, lat: pos.lat }
+    })
+    return init
+  })
+
+  // Save when drag mode is turned off
+  useEffect(() => {
+    if (!draggable) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(positions))
+    }
+  }, [draggable, positions])
+
+  const handleDragEnd = useCallback((agentId: string, e: any) => {
+    const { lng, lat } = e.lngLat
+    setPositions(prev => ({ ...prev, [agentId]: { lng, lat } }))
+  }, [])
+
   return (
     <>
-      {Object.entries(MAC_POSITIONS).map(([agentId, pos]) => {
+      {Object.entries(positions).map(([agentId, pos]) => {
         const mac = MAC_NAMES[agentId]
         if (!mac) return null
         const agent = agents[agentId]
@@ -19,10 +51,17 @@ export function MapMacMarkers({ agents }: MapMacMarkersProps) {
         const Icon = mac.Icon
 
         return (
-          <Marker key={agentId} latitude={pos.lat} longitude={pos.lng} anchor="center">
+          <Marker
+            key={agentId}
+            latitude={pos.lat}
+            longitude={pos.lng}
+            anchor="center"
+            draggable={draggable}
+            onDragEnd={(e) => handleDragEnd(agentId, e)}
+          >
             <div className={`relative ${isOffline ? 'animate-agent-death' : ''}`}>
               <div
-                className="w-8 h-8 flex items-center justify-center rounded-sm"
+                className={`w-8 h-8 flex items-center justify-center rounded-sm ${draggable ? 'cursor-grab active:cursor-grabbing ring-1 ring-amber-400/50' : ''}`}
                 style={{
                   backgroundColor: `${mac.color}20`,
                   border: `1.5px solid ${mac.color}`,
@@ -30,7 +69,7 @@ export function MapMacMarkers({ agents }: MapMacMarkersProps) {
                 }}
               >
                 <Icon className="w-4 h-4" style={{ color: mac.color }} />
-                {!isOffline && isActive && (
+                {!isOffline && isActive && !draggable && (
                   <div
                     className="absolute inset-0 rounded-sm animate-pulse-ring"
                     style={{ borderColor: mac.color, borderWidth: 1 }}

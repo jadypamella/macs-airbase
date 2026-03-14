@@ -44,6 +44,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
   const [ewJamming, setEwJamming] = useState(false)
   const [dispersalActive, setDispersalActive] = useState(false)
   const [zoneStatuses, setZoneStatuses] = useState<Record<string, string>>({})
+  const [editMode, setEditMode] = useState(false)
   
   const mapRef = useRef<MapRef>(null)
   const processedRef = useRef<Set<string>>(new Set())
@@ -182,12 +183,12 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         <MapBuildings3D visible={true} />
         <ThreatHeatmap events={events} />
         <DispersalRoutes active={dispersalActive} />
-        <MapMacMarkers agents={agents} />
+        <MapMacMarkers agents={agents} draggable={editMode} />
         <MapPulse pulseRings={pulseRings} />
         <ThreatTracks tracks={threatTracks} />
         <RadarSweep ewJamming={ewJamming} />
         <ConnectionArcs arcs={arcs} />
-        <AircraftMarkers aircraft={worldState?.aircraft} />
+        <AircraftMarkers aircraft={worldState?.aircraft} draggable={editMode} />
 
       </Map>
 
@@ -217,6 +218,16 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
           }`}
         >
           SATELLIT
+        </button>
+        <button
+          onClick={() => setEditMode(prev => !prev)}
+          className={`px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors ${
+            editMode
+              ? 'bg-amber-500/20 border-amber-500/50 text-amber-400'
+              : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
+          }`}
+        >
+          {editMode ? '🔓 EDIT' : '🔒 EDIT'}
         </button>
       </div>
 
