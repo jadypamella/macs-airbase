@@ -14,7 +14,6 @@ import { MAC_NAMES, SEVERITY_COLORS } from '@/constants'
 import type { SwarmEvent } from '@/constants'
 
 const AIRCRAFT_STORAGE_KEY = 'aircraft-marker-positions'
-const AIRCRAFT_STORAGE_KEY = 'aircraft-marker-positions'
 
 function extractAircraftId(event: SwarmEvent): string | null {
   const msg = event.payload?.message || ''
