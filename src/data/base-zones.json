@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "id": "runway-zone", "name": "Startbana / Runway Zone", "status": "active" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[15.250,56.270],[15.280,56.270],[15.280,56.264],[15.250,56.264],[15.250,56.270]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "apron-zone", "name": "Plattan / Apron Zone", "status": "active" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[15.252,56.272],[15.268,56.272],[15.268,56.268],[15.252,56.268],[15.252,56.272]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "threat-zone", "name": "Hotzon / Threat Zone", "status": "safe" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[15.300,56.310],[15.550,56.310],[15.550,56.220],[15.300,56.220],[15.300,56.310]]]
+      }
+    }
+  ]
+}
