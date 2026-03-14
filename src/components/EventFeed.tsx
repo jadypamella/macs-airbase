@@ -7,6 +7,7 @@ import type { SwarmEvent } from '../constants'
 
 interface EventFeedProps {
   events: SwarmEvent[]
+  onEventClick?: (event: SwarmEvent) => void
 }
 
 const SEVERITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
