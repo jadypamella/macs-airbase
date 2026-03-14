@@ -147,9 +147,14 @@ function getPhasePosition(
 
 const GROUND_PHASES = new Set(['SHELTER', 'POST_FLIGHT', 'FUELING', 'ARMING', 'MAINTENANCE', 'GROUNDED', 'PRE_FLIGHT', 'TAXI', 'TAKEOFF', 'LANDING'])
 
-export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
-  const [overrides, setOverrides] = useState<Record<string, [number, number]>>({})
+/* Fixed position overrides set by user */
+const POSITION_OVERRIDES: Record<string, [number, number]> = {
+  'Gripen-03': [15.263333, 56.260772],
+  'Gripen-04': [15.264146, 56.264281],
+  'Gripen-05': [15.274118, 56.271807],
+}
 
+export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
   const markers = useMemo(() => {
     if (!aircraft) return []
     const entries = Object.values(aircraft).filter(ac => GROUND_PHASES.has(ac.phase))
@@ -158,16 +163,10 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
       const phase = ac.phase
       const slotIndex = phaseCounters[phase] || 0
       phaseCounters[phase] = slotIndex + 1
-      const position = overrides[ac.id] || getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
+      const position = POSITION_OVERRIDES[ac.id] || getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
       return { ...ac, position }
     })
-  }, [aircraft, overrides])
-
-  const handleDragEnd = useCallback((id: string, e: any) => {
-    const { lng, lat } = e.lngLat
-    setOverrides(prev => ({ ...prev, [id]: [lng, lat] }))
-    console.log(`AIRCRAFT_POSITION ${id}: [${lng.toFixed(6)}, ${lat.toFixed(6)}]  // lng, lat`)
-  }, [])
+  }, [aircraft])
 
   return (
     <>
