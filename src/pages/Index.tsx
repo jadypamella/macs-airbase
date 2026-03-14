@@ -13,15 +13,7 @@ import { EVENT_LOCATION_MAP, LOCATIONS, MAC_POSITIONS } from '@/data/locations'
 import { MAC_NAMES, SEVERITY_COLORS } from '@/constants'
 import type { SwarmEvent } from '@/constants'
 
-const AGENT_LOC_MAP: Record<string, string> = {
-  OPS: 'ops-center',
-  FUEL: 'fuel-depot',
-  ARMING: 'arming-pad',
-  MAINT: 'hangar-alpha',
-  THREAT: 'radar-tower',
-}
-
-const MAC_STORAGE_KEY = 'mac-marker-positions'
+const AIRCRAFT_STORAGE_KEY = 'aircraft-marker-positions'
 const AIRCRAFT_STORAGE_KEY = 'aircraft-marker-positions'
 
 function extractAircraftId(event: SwarmEvent): string | null {
