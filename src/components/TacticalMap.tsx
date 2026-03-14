@@ -19,6 +19,7 @@ import type { AgentState, SwarmEvent, WorldState } from '../constants'
 interface TacticalMapProps {
   events: SwarmEvent[]
   agents: Record<string, AgentState>
+  worldState: WorldState | null
 }
 
 const PULSE_COLORS: Record<string, string> = {
