@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Marker } from 'react-map-gl/maplibre'
 import type { AircraftState } from '../constants'
-import { DISPERSAL_ROUTE_BRAVO, DISPERSAL_ROUTE_CHARLIE } from '../data/routes'
+
 
 interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
