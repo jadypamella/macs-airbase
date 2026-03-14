@@ -3,7 +3,7 @@ export const DISPERSAL_ROUTE_BRAVO = {
   geometry: {
     type: 'LineString' as const,
     coordinates: [
-      [15.265, 56.267],
+      [15.2715, 56.2673],
       [15.230, 56.280],
       [15.200, 56.295],
       [15.180, 56.310],
