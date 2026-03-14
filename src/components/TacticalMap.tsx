@@ -200,13 +200,22 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         <ThreatTracks tracks={threatTracks} />
         <RadarSweep ewJamming={ewJamming} />
         <ConnectionArcs arcs={arcs} />
-        <AircraftMarkers aircraft={worldState?.aircraft} draggable={editMode} />
+        <AircraftMarkers
+          aircraft={worldState?.aircraft}
+          draggable={editMode}
+          onAircraftClick={(ac, pos) => setSelectedAircraft({ ac, pos })}
+        />
 
       </Map>
 
       {/* Draggable event detail panel */}
       {flyToTarget?.event && panelScreenPos && (
         <DraggableEventPanel event={flyToTarget.event} onClose={() => { onPopupClose?.(); setPanelScreenPos(null) }} initialPos={panelScreenPos} />
+      )}
+
+      {/* Draggable aircraft detail panel */}
+      {selectedAircraft && (
+        <DraggableAircraftPanel ac={selectedAircraft.ac} initialPos={selectedAircraft.pos} onClose={() => setSelectedAircraft(null)} />
       )}
 
       {/* Map style toggle */}
