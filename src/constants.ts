@@ -29,7 +29,7 @@ export const MAC_NAMES: Record<string, MacDef> = {
   FUEL: {
     name: 'Mac Fuel',
     nameSv: 'Mac Bränsle',
-    Icon: BeakerIcon,
+    Icon: Fuel,
     domain: 'FUEL',
     color: '#06b6d4',
     tagline: 'JP-8 flowing. Trucks on pad.',
