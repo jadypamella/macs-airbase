@@ -1,7 +1,8 @@
 import {
-  PaperAirplaneIcon, BeakerIcon, BoltIcon,
+  PaperAirplaneIcon, BoltIcon,
   WrenchScrewdriverIcon, EyeIcon,
 } from '@heroicons/react/24/solid'
+import { Fuel } from 'lucide-react'
 
 export type AgentId = 'OPS' | 'FUEL' | 'ARMING' | 'MAINT' | 'THREAT'
 
@@ -28,7 +29,7 @@ export const MAC_NAMES: Record<string, MacDef> = {
   FUEL: {
     name: 'Mac Fuel',
     nameSv: 'Mac Bränsle',
-    Icon: BeakerIcon,
+    Icon: Fuel,
     domain: 'FUEL',
     color: '#06b6d4',
     tagline: 'JP-8 flowing. Trucks on pad.',

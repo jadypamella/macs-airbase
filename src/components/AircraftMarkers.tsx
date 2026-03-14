@@ -81,9 +81,9 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
                   fill="none"
                   className={isAirborne ? 'drop-shadow-[0_0_6px_rgba(34,211,238,0.6)]' : ''}
                 >
-                  {/* Fighter jet silhouette */}
+                  {/* Fighter jet silhouette - top-down view */}
                   <path
-                    d="M12 2L10 8L3 10L5 12L3 14L10 16L12 22L14 16L21 14L19 12L21 10L14 8L12 2Z"
+                    d="M12 3L11 7L11 9L4 13L4 15L11 13L11 17L8 19L8 21L12 19.5L16 21L16 19L13 17L13 13L20 15L20 13L13 9L13 7L12 3Z"
                     fill={color}
                     fillOpacity={ac.serviceable ? 0.9 : 0.4}
                     stroke={color}

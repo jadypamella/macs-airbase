@@ -6,13 +6,12 @@ interface MapBuildings3DProps {
 }
 
 export function MapBuildings3D({ visible }: MapBuildings3DProps) {
-  if (!visible) return null
-
   return (
     <Source id="base-buildings" type="geojson" data={buildingsData as GeoJSON.FeatureCollection}>
       <Layer
         id="buildings-3d"
         type="fill-extrusion"
+        layout={{ visibility: visible ? 'visible' : 'none' } as any}
         paint={{
           'fill-extrusion-color': [
             'match',
@@ -22,8 +21,8 @@ export function MapBuildings3D({ visible }: MapBuildings3DProps) {
             'bunker', '#991b1b',
             'hangar', '#1e40af',
             '#1e293b',
-          ],
-          'fill-extrusion-height': ['get', 'height'],
+          ] as any,
+          'fill-extrusion-height': ['get', 'height'] as any,
           'fill-extrusion-base': 0,
           'fill-extrusion-opacity': 0.75,
         }}
