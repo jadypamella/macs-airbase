@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
 import { useSwarm } from '@/hooks/useSwarm'
 import { LangProvider } from '@/hooks/useLang'
 import { Header } from '@/components/Header'
