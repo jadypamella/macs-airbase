@@ -169,10 +169,15 @@ const POSITION_OVERRIDES: Record<string, [number, number]> = {
 }
 
 export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick }: AircraftMarkersProps) {
-  const [overrides, setOverrides] = useState<Record<string, [number, number]>>(() => ({
-    ...POSITION_OVERRIDES,
-    ...loadSavedAc(),
-  }))
+  const [overrides, setOverrides] = useState<Record<string, [number, number]>>(() => {
+    const saved = loadSavedAc()
+    // Merge: POSITION_OVERRIDES always wins, saved only for non-overridden aircraft
+    const merged: Record<string, [number, number]> = {}
+    for (const [k, v] of Object.entries(saved)) {
+      if (!(k in POSITION_OVERRIDES)) merged[k] = v
+    }
+    return { ...merged, ...POSITION_OVERRIDES }
+  })
 
   const markers = useMemo(() => {
     if (!aircraft) return []

@@ -9,7 +9,7 @@ import { WorldStateGauges } from '@/components/WorldStateGauges'
 import { TimelineBar } from '@/components/TimelineBar'
 import { ScrambleOverlay } from '@/components/ScrambleOverlay'
 import { EmergenceGraph } from '@/components/EmergenceGraph'
-import { EVENT_LOCATION_MAP, LOCATIONS } from '@/data/locations'
+import { EVENT_LOCATION_MAP, LOCATIONS, MAC_POSITIONS } from '@/data/locations'
 import { MAC_NAMES, SEVERITY_COLORS } from '@/constants'
 import type { SwarmEvent } from '@/constants'
 
