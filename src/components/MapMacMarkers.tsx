@@ -1,5 +1,5 @@
 import { Marker } from 'react-map-gl/maplibre'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { MAC_NAMES } from '../constants'
 import { MAC_POSITIONS } from '../data/locations'
 import type { AgentState } from '../constants'
@@ -35,30 +35,6 @@ function toValidPosition(value: unknown): { lng: number; lat: number } | null {
   }
 
   return null
-}
-
-function loadSaved(): Record<string, { lng: number; lat: number }> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return {}
-
-    const parsed = JSON.parse(raw)
-    if (!parsed || typeof parsed !== 'object') return {}
-
-    const normalized: Record<string, { lng: number; lat: number }> = {}
-    Object.entries(parsed as Record<string, unknown>).forEach(([id, pos]) => {
-      const valid = toValidPosition(pos)
-      if (valid) normalized[id] = valid
-    })
-
-    if (Object.keys(normalized).length !== Object.keys(parsed as Record<string, unknown>).length) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
-    }
-
-    return normalized
-  } catch {
-    return {}
-  }
 }
 
 export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps) {
