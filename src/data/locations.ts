@@ -19,11 +19,11 @@ export const LOCATIONS: Record<string, Location> = {
 }
 
 export const MAC_POSITIONS: Record<string, Location> = {
-  OPS:    LOCATIONS['ops-center'],
-  FUEL:   LOCATIONS['fuel-depot'],
-  ARMING: LOCATIONS['arming-pad'],
-  MAINT:  LOCATIONS['hangar-alpha'],
-  THREAT: LOCATIONS['radar-tower'],
+  OPS:    { lat: 56.269003, lng: 15.272747, label: 'Operationscentral / Ops Center', type: 'ops' },
+  FUEL:   { lat: 56.264227, lng: 15.273499, label: 'Bränsleförråd / Fuel Depot', type: 'fuel' },
+  ARMING: { lat: 56.266431, lng: 15.273033, label: 'Beväpningsplats / Arming Pad', type: 'arming' },
+  MAINT:  { lat: 56.264638, lng: 15.270250, label: 'Hangar Alpha / Maintenance', type: 'maintenance' },
+  THREAT: { lat: 56.272000, lng: 15.268000, label: 'Radartorn / Radar Tower', type: 'radar' },
 }
 
 export const EVENT_LOCATION_MAP: Record<string, string> = {
