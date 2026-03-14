@@ -150,17 +150,12 @@
   padding: 0 !important;
   box-shadow: none !important;
   border-radius: 0 !important;
+  overflow: hidden;
 }
 .maplibregl-popup-tip {
   border-top-color: hsl(215 40% 8% / 0.95) !important;
+  border-bottom-color: hsl(215 40% 8% / 0.95) !important;
 }
 .maplibregl-popup-close-button {
-  color: hsl(220 14% 60%) !important;
-  font-size: 16px !important;
-  right: 4px !important;
-  top: 2px !important;
-}
-.maplibregl-popup-close-button:hover {
-  color: white !important;
-  background: transparent !important;
+  display: none !important;
 }
