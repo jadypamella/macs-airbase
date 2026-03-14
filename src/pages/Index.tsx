@@ -9,19 +9,10 @@ import { WorldStateGauges } from '@/components/WorldStateGauges'
 import { TimelineBar } from '@/components/TimelineBar'
 import { ScrambleOverlay } from '@/components/ScrambleOverlay'
 import { EmergenceGraph } from '@/components/EmergenceGraph'
-import { EVENT_LOCATION_MAP, LOCATIONS } from '@/data/locations'
+import { EVENT_LOCATION_MAP, LOCATIONS, MAC_POSITIONS } from '@/data/locations'
 import { MAC_NAMES, SEVERITY_COLORS } from '@/constants'
 import type { SwarmEvent } from '@/constants'
 
-const AGENT_LOC_MAP: Record<string, string> = {
-  OPS: 'ops-center',
-  FUEL: 'fuel-depot',
-  ARMING: 'arming-pad',
-  MAINT: 'hangar-alpha',
-  THREAT: 'radar-tower',
-}
-
-const MAC_STORAGE_KEY = 'mac-marker-positions'
 const AIRCRAFT_STORAGE_KEY = 'aircraft-marker-positions'
 
 function extractAircraftId(event: SwarmEvent): string | null {
@@ -62,26 +53,16 @@ const Index = () => {
       }
     }
 
-    // 2) Agent saved position
+    // 2) Use MAC_POSITIONS for agent source (most accurate)
     if (!target) {
-      try {
-        const raw = localStorage.getItem(MAC_STORAGE_KEY)
-        const saved = raw ? JSON.parse(raw) as Record<string, { lng: number; lat: number }> : {}
-        const pos = saved[event.source]
-        if (pos) target = { lng: pos.lng, lat: pos.lat }
-      } catch {
-        // ignore parse errors
-      }
+      const macPos = MAC_POSITIONS[event.source]
+      if (macPos) target = { lng: macPos.lng, lat: macPos.lat }
     }
 
-    // 3) Existing static fallback
+    // 3) Existing static fallback by event type
     if (!target) {
       const locKey = EVENT_LOCATION_MAP[event.event_type]
-      let loc = locKey ? LOCATIONS[locKey] : null
-      if (!loc) {
-        const agentLoc = AGENT_LOC_MAP[event.source]
-        loc = agentLoc ? LOCATIONS[agentLoc] : null
-      }
+      const loc = locKey ? LOCATIONS[locKey] : null
       if (loc) target = { lng: loc.lng, lat: loc.lat }
     }
 
