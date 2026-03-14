@@ -4,7 +4,6 @@ import { MAC_NAMES } from '../constants'
 import { MAC_POSITIONS } from '../data/locations'
 import type { AgentState } from '../constants'
 
-const STORAGE_KEY = 'mac-marker-positions'
 const LON_MIN = 15.1
 const LON_MAX = 15.55
 const LAT_MIN = 56.15
@@ -47,7 +46,7 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
   })
 
   useEffect(() => {
-    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem('mac-marker-positions')
   }, [])
 
   const handleDragEnd = useCallback((agentId: string, e: any) => {
@@ -56,7 +55,12 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
 
     setPositions(prev => {
       const next = { ...prev, [agentId]: validPos }
-      console.log('📍 MAC POSITIONS:', JSON.stringify(next, null, 2))
+      console.log('📍 MAC POSITIONS — cole isso no chat para salvar:')
+      console.log(JSON.stringify(
+        Object.fromEntries(
+          Object.entries(next).map(([id, p]) => [id, { lat: Number(p.lat.toFixed(6)), lng: Number(p.lng.toFixed(6)) }])
+        ), null, 2
+      ))
       return next
     })
   }, [])
@@ -65,8 +69,10 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
     const output = Object.entries(positions).map(([id, pos]) =>
       `  ${id}: { lat: ${pos.lat.toFixed(6)}, lng: ${pos.lng.toFixed(6)} }`
     ).join(',\n')
-    navigator.clipboard.writeText(`{\n${output}\n}`)
-    alert('Posições copiadas! Cole no chat.')
+    const text = `{\n${output}\n}`
+    navigator.clipboard.writeText(text)
+    alert('Posições copiadas para o clipboard! Cole no chat.')
+    console.log('📍 MAC_POSITIONS para colar:', text)
   }, [positions])
 
   return (
@@ -84,7 +90,6 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
           </button>
         </div>
       )}
-    <>
       {Object.entries(positions).map(([agentId, pos]) => {
         const mac = MAC_NAMES[agentId]
         if (!mac) return null
