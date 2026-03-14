@@ -40,7 +40,7 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
   const [ewJamming, setEwJamming] = useState(false)
   const [dispersalActive, setDispersalActive] = useState(false)
   const [zoneStatuses, setZoneStatuses] = useState<Record<string, string>>({})
-  const [show3D, setShow3D] = useState(true)
+  
   const processedRef = useRef<Set<string>>(new Set())
 
   const processNewEvent = useCallback((event: SwarmEvent) => {
@@ -166,7 +166,7 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
         mapStyle={activeStyle as any}
       >
         <MapZones zoneStatuses={zoneStatuses} />
-        <MapBuildings3D visible={show3D} />
+        <MapBuildings3D visible={true} />
         <ThreatHeatmap events={events} />
         <DispersalRoutes active={dispersalActive} />
         <MapMacMarkers agents={agents} />
@@ -198,16 +198,6 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
           }`}
         >
           SATELLIT
-        </button>
-        <button
-          onClick={() => setShow3D(p => !p)}
-          className={`px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors ${
-            show3D
-              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
-              : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
-          }`}
-        >
-          3D
         </button>
       </div>
 

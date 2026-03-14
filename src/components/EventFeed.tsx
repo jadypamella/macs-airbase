@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { EventRow } from './EventRow'
 import { MAC_NAMES, SEVERITY_COLORS } from '../constants'
@@ -18,6 +18,7 @@ export function EventFeed({ events }: EventFeedProps) {
   const [search, setSearch] = useState('')
   const [activeSeverities, setActiveSeverities] = useState<Set<string>>(new Set())
   const [activeAgents, setActiveAgents] = useState<Set<string>>(new Set())
+  const [activeAircraft, setActiveAircraft] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -43,9 +44,45 @@ export function EventFeed({ events }: EventFeedProps) {
     })
   }
 
+  const toggleAircraft = (id: string) => {
+    setActiveAircraft(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  // Extract aircraft IDs mentioned in events
+  const aircraftIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const e of events) {
+      const msg = e.payload?.message || ''
+      const matches = msg.match(/Gripen-\d+/gi)
+      if (matches) matches.forEach((m: string) => ids.add(m))
+    }
+    return Array.from(ids).sort()
+  }, [events])
+
+  // Count events per aircraft
+  const aircraftCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const e of events) {
+      const msg = e.payload?.message || ''
+      const matches = msg.match(/Gripen-\d+/gi)
+      if (matches) matches.forEach((m: string) => { counts[m] = (counts[m] || 0) + 1 })
+    }
+    return counts
+  }, [events])
+
   const filtered = events.filter(e => {
     if (activeSeverities.size > 0 && !activeSeverities.has(e.severity)) return false
     if (activeAgents.size > 0 && !activeAgents.has(e.source) && e.source !== 'SYSTEM') return false
+    if (activeAircraft.size > 0) {
+      const msg = e.payload?.message || ''
+      const mentions = msg.match(/Gripen-\d+/gi) || []
+      if (!mentions.some((m: string) => activeAircraft.has(m))) return false
+    }
     if (search) {
       const q = search.toLowerCase()
       const msg = (e.payload?.message || '').toLowerCase()
@@ -72,6 +109,34 @@ export function EventFeed({ events }: EventFeedProps) {
         </div>
       </div>
 
+      {/* Filter row: Aircraft */}
+      {aircraftIds.length > 0 && (
+        <div className="px-3 py-1.5 border-b border-white/5 flex items-center gap-1.5 flex-wrap">
+          {aircraftIds.map(acId => {
+            const isActive = activeAircraft.has(acId)
+            return (
+              <button
+                key={acId}
+                onClick={() => toggleAircraft(acId)}
+                className={`flex items-center gap-1 px-1.5 py-0.5 border transition-all ${
+                  isActive
+                    ? 'border-status-green/60 bg-status-green/15'
+                    : 'border-white/5 bg-transparent hover:border-white/15'
+                }`}
+              >
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 3L11 7L11 9L4 13L4 15L11 13L11 17L8 19L8 21L12 19.5L16 21L16 19L13 17L13 13L20 15L20 13L13 9L13 7L12 3Z"
+                    fill={isActive ? '#a3e635' : '#64748b'}
+                  />
+                </svg>
+                <span className="text-[8px] font-bold text-text-dim">{acId.replace('Gripen-', 'G')}</span>
+                <span className="text-[8px] text-text-dim">{aircraftCounts[acId] || 0}</span>
+              </button>
+            )
+          })}
+        </div>
+      )}
       {/* Filter row: Agent icons */}
       <div className="px-3 py-1.5 border-b border-white/5 flex items-center gap-1.5 flex-wrap">
         {AGENT_IDS.map(id => {
