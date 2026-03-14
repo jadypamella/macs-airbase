@@ -164,7 +164,12 @@ const POSITION_OVERRIDES: Record<string, [number, number]> = {
   'Gripen-05': [15.274118, 56.271807],
 }
 
-export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
+export function AircraftMarkers({ aircraft, draggable = false }: AircraftMarkersProps) {
+  const [overrides, setOverrides] = useState<Record<string, [number, number]>>(() => ({
+    ...POSITION_OVERRIDES,
+    ...loadSavedAc(),
+  }))
+
   const markers = useMemo(() => {
     if (!aircraft) return []
     const entries = Object.values(aircraft).filter(ac => GROUND_PHASES.has(ac.phase))
@@ -173,10 +178,21 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
       const phase = ac.phase
       const slotIndex = phaseCounters[phase] || 0
       phaseCounters[phase] = slotIndex + 1
-      const position = POSITION_OVERRIDES[ac.id] || getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
+      const position = overrides[ac.id] || getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
       return { ...ac, position }
     })
-  }, [aircraft])
+  }, [aircraft, overrides])
+
+  useEffect(() => {
+    if (!draggable) {
+      localStorage.setItem(AC_STORAGE_KEY, JSON.stringify(overrides))
+    }
+  }, [draggable, overrides])
+
+  const handleDragEnd = useCallback((id: string, e: any) => {
+    const { lng, lat } = e.lngLat
+    setOverrides(prev => ({ ...prev, [id]: [lng, lat] }))
+  }, [])
 
   return (
     <>
@@ -192,6 +208,8 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
             latitude={lat}
             longitude={lng}
             anchor="center"
+            draggable={draggable}
+            onDragEnd={(e) => handleDragEnd(ac.id, e)}
           >
             <div className="relative group cursor-pointer">
               {/* Aircraft icon */}
