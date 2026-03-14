@@ -59,10 +59,16 @@ function getAircraftPosition(ac: AircraftState, index: number, total: number): [
 export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
   const markers = useMemo(() => {
     if (!aircraft) return []
-    return Object.values(aircraft).map((ac, i) => ({
-      ...ac,
-      position: getAircraftPosition(ac, i),
-    }))
+    const entries = Object.values(aircraft)
+    const groundEntries = entries.filter(ac => ac.phase !== 'AIRBORNE' && ac.phase !== 'RTB')
+    const totalGround = groundEntries.length
+    let groundIdx = 0
+    return entries.map((ac, i) => {
+      const isGround = ac.phase !== 'AIRBORNE' && ac.phase !== 'RTB'
+      const pos = getAircraftPosition(ac, isGround ? groundIdx : i, totalGround)
+      if (isGround) groundIdx++
+      return { ...ac, position: pos }
+    })
   }, [aircraft])
 
   return (
