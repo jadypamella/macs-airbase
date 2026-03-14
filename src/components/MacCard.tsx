@@ -6,9 +6,11 @@ import type { AgentState } from '../constants'
 interface MacCardProps {
   agentId: string
   agent: AgentState
+  onKill?: (agentId: string) => void
+  onRevive?: (agentId: string) => void
 }
 
-export function MacCard({ agentId, agent }: MacCardProps) {
+export function MacCard({ agentId, agent, onKill, onRevive }: MacCardProps) {
   const { lang } = useLang()
   const mac = MAC_NAMES[agentId]
   if (!mac) return null
@@ -27,10 +29,6 @@ export function MacCard({ agentId, agent }: MacCardProps) {
     : agent?.status === 'online' ? 'text-status-green'
     : 'text-text-dim'
 
-  const elapsed = agent?.lastSeen
-    ? Math.round(Date.now() / 1000 - agent.lastSeen)
-    : null
-
   return (
     <motion.div
       layout
@@ -44,18 +42,46 @@ export function MacCard({ agentId, agent }: MacCardProps) {
             {lang === 'sv' ? mac.nameSv : mac.name}
           </span>
         </div>
-        <span className={`text-[9px] font-bold tracking-wider ${statusColor}`}>
-          {statusLabel}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {isOffline && (
+            <span className="w-2 h-2 rounded-full bg-status-red" />
+          )}
+          {!isOffline && (agent?.status === 'online' || isActive) && (
+            <span className="w-2 h-2 rounded-full bg-status-green" />
+          )}
+          <span className={`text-[9px] font-bold tracking-wider ${statusColor}`}>
+            {statusLabel}
+          </span>
+        </div>
       </div>
+
       {!isOffline && (
-        <p className="text-[10px] text-text-muted leading-tight mb-1.5">
+        <p className="text-[10px] text-text-muted leading-tight italic mb-1.5">
           {lang === 'sv' ? mac.taglineSv : mac.tagline}
         </p>
       )}
-      <div className="flex items-center justify-between text-[9px] text-text-dim">
-        <span>{lang === 'sv' ? 'ÅTGÄRDER' : 'ACTIONS'}: {agent?.actionCount ?? 0}</span>
-        {elapsed !== null && <span>{lang === 'sv' ? 'SENAST' : 'LAST'}: {elapsed}s</span>}
+
+      <div className="flex items-center justify-between text-[9px] text-text-dim mb-2">
+        <span>Actions: {agent?.actionCount ?? 0}</span>
+      </div>
+
+      <div className="flex gap-1.5">
+        <button
+          onClick={() => onKill?.(agentId)}
+          disabled={isOffline}
+          className="px-2.5 py-1 text-[9px] font-bold tracking-wider uppercase border rounded-sm transition-colors
+            border-status-red/40 text-status-red hover:bg-status-red/10 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          KILL
+        </button>
+        <button
+          onClick={() => onRevive?.(agentId)}
+          disabled={!isOffline}
+          className="px-2.5 py-1 text-[9px] font-bold tracking-wider uppercase border rounded-sm transition-colors
+            border-status-green/40 text-status-green hover:bg-status-green/10 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          REVIVE
+        </button>
       </div>
     </motion.div>
   )
