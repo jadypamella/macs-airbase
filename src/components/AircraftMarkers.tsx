@@ -67,7 +67,7 @@ function lerpRunway(t: number): [number, number] {
 }
 
 // Base center for airborne orbit
-const BASE_CENTER: [number, number] = [15.265, 56.267]
+const BASE_CENTER: [number, number] = [15.2715, 56.2673]
 
 /* ── Phase → color ── */
 const PHASE_COLORS: Record<string, string> = {
