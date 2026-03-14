@@ -21,6 +21,15 @@ const AGENT_LOC_MAP: Record<string, string> = {
   THREAT: 'radar-tower',
 }
 
+const MAC_STORAGE_KEY = 'mac-marker-positions'
+const AIRCRAFT_STORAGE_KEY = 'aircraft-marker-positions'
+
+function extractAircraftId(event: SwarmEvent): string | null {
+  const msg = event.payload?.message || ''
+  const match = msg.match(/Gripen-\d+/i)
+  return match ? `Gripen-${match[0].split('-')[1]}` : null
+}
+
 const Index = () => {
   const { events, agents, connected, scenario, worldState, threatLevel } = useSwarm()
   const [scrambleActive, setScrambleActive] = useState(false)
@@ -38,14 +47,46 @@ const Index = () => {
   const criticalCount = events.filter(e => e.severity === 'CRITICAL').length
 
   const handleEventClick = useCallback((event: SwarmEvent) => {
-    const locKey = EVENT_LOCATION_MAP[event.event_type]
-    let loc = locKey ? LOCATIONS[locKey] : null
-    if (!loc) {
-      const agentLoc = AGENT_LOC_MAP[event.source]
-      loc = agentLoc ? LOCATIONS[agentLoc] : null
+    let target: { lng: number; lat: number } | null = null
+
+    // 1) Aircraft saved position (if event references Gripen-XX)
+    const aircraftId = extractAircraftId(event)
+    if (aircraftId) {
+      try {
+        const raw = localStorage.getItem(AIRCRAFT_STORAGE_KEY)
+        const saved = raw ? JSON.parse(raw) as Record<string, [number, number]> : {}
+        const pos = saved[aircraftId]
+        if (pos) target = { lng: pos[0], lat: pos[1] }
+      } catch {
+        // ignore parse errors
+      }
     }
-    if (loc) {
-      setFlyToTarget({ lng: loc.lng, lat: loc.lat, event })
+
+    // 2) Agent saved position
+    if (!target) {
+      try {
+        const raw = localStorage.getItem(MAC_STORAGE_KEY)
+        const saved = raw ? JSON.parse(raw) as Record<string, { lng: number; lat: number }> : {}
+        const pos = saved[event.source]
+        if (pos) target = { lng: pos.lng, lat: pos.lat }
+      } catch {
+        // ignore parse errors
+      }
+    }
+
+    // 3) Existing static fallback
+    if (!target) {
+      const locKey = EVENT_LOCATION_MAP[event.event_type]
+      let loc = locKey ? LOCATIONS[locKey] : null
+      if (!loc) {
+        const agentLoc = AGENT_LOC_MAP[event.source]
+        loc = agentLoc ? LOCATIONS[agentLoc] : null
+      }
+      if (loc) target = { lng: loc.lng, lat: loc.lat }
+    }
+
+    if (target) {
+      setFlyToTarget({ lng: target.lng, lat: target.lat, event })
     }
   }, [])
 
