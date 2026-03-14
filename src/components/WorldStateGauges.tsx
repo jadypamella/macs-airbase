@@ -8,6 +8,7 @@ import type { WorldState } from '../constants'
 
 interface WorldStateGaugesProps {
   worldState: WorldState | null
+  criticalCount?: number
 }
 
 // Reusable jet SVG icon component matching the map aircraft markers
