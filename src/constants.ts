@@ -1,7 +1,8 @@
 import {
-  PaperAirplaneIcon, BeakerIcon, BoltIcon,
+  PaperAirplaneIcon, BoltIcon,
   WrenchScrewdriverIcon, EyeIcon,
 } from '@heroicons/react/24/solid'
+import { Fuel } from 'lucide-react'
 
 export type AgentId = 'OPS' | 'FUEL' | 'ARMING' | 'MAINT' | 'THREAT'
 
