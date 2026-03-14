@@ -9,8 +9,6 @@ import type { PulseRing } from './MapPulse'
 import { RadarSweep } from './RadarSweep'
 import { ThreatTracks } from './ThreatTracks'
 import type { ThreatTrack } from './ThreatTracks'
-import { ConnectionArcs } from './ConnectionArcs'
-import type { Arc } from './ConnectionArcs'
 import { DispersalRoutes } from './DispersalRoutes'
 import { AircraftMarkers } from './AircraftMarkers'
 import { MapBuildings3D } from './MapBuildings3D'
@@ -18,7 +16,7 @@ import { ThreatHeatmap } from './ThreatHeatmap'
 import { DraggableEventPanel } from './DraggableEventPanel'
 import { DraggableAircraftPanel } from './DraggableAircraftPanel'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '../data/locations'
-import { detectCrossDomainRefs, MAC_NAMES, SEVERITY_COLORS } from '../constants'
+import { MAC_NAMES, SEVERITY_COLORS } from '../constants'
 import type { AgentState, SwarmEvent, WorldState, AircraftState } from '../constants'
 
 interface TacticalMapProps {
@@ -38,24 +36,19 @@ const PULSE_COLORS: Record<string, string> = {
   TASKING_ORDER: '#3b82f6',
 }
 
-interface OpenPanel {
-  id: string
-  type: 'event' | 'aircraft'
-  event?: SwarmEvent
-  aircraft?: AircraftState
-  pos: { x: number; y: number }
-}
+type ActivePanel =
+  | { type: 'event'; event: SwarmEvent; pos: { x: number; y: number } }
+  | { type: 'aircraft'; aircraft: AircraftState; pos: { x: number; y: number } }
 
 export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupClose }: TacticalMapProps) {
   const [pulseRings, setPulseRings] = useState<PulseRing[]>([])
   const [threatTracks, setThreatTracks] = useState<ThreatTrack[]>([])
-  const [arcs, setArcs] = useState<Arc[]>([])
   const [ewJamming, setEwJamming] = useState(false)
   const [dispersalActive, setDispersalActive] = useState(false)
   const [zoneStatuses, setZoneStatuses] = useState<Record<string, string>>({})
   const [editMode, setEditMode] = useState(false)
-  const [openPanels, setOpenPanels] = useState<OpenPanel[]>([])
-  
+  const [activePanel, setActivePanel] = useState<ActivePanel | null>(null)
+
   const mapRef = useRef<MapRef>(null)
   const processedRef = useRef<Set<string>>(new Set())
 
@@ -104,23 +97,6 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
     if (event.event_type === 'SCRAMBLE_ORDER' || event.event_type === 'TASKING_ORDER') {
       setZoneStatuses(prev => ({ ...prev, 'runway-zone': 'warning' }))
     }
-
-    if (event.event_type === 'ACTION_TAKEN' && event.source !== 'SYSTEM') {
-      const refs = detectCrossDomainRefs(event)
-      refs.forEach(refId => {
-        const arc: Arc = {
-          id: `arc-${event.id}-${refId}`,
-          fromId: event.source,
-          toId: refId,
-          color: MAC_NAMES[event.source]?.color || '#64748b',
-          createdAt: Date.now(),
-        }
-        setArcs(prev => [...prev, arc])
-        setTimeout(() => {
-          setArcs(prev => prev.filter(a => a.id !== arc.id))
-        }, 4500)
-      })
-    }
   }, [])
 
   useEffect(() => {
@@ -156,43 +132,60 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
     ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
     : SATELLITE_STYLE
 
-  // Fly to target when event is clicked — open a NEW panel each time
+  // Fly to target — replace any existing panel
   useEffect(() => {
     if (flyToTarget && mapRef.current) {
       mapRef.current.flyTo({ center: [flyToTarget.lng, flyToTarget.lat], zoom: 15, duration: 1200 })
       setTimeout(() => {
         if (mapRef.current) {
           const pt = mapRef.current.project([flyToTarget.lng, flyToTarget.lat])
-          const panelId = `evt-${flyToTarget.event.id}-${Date.now()}`
-          setOpenPanels(prev => [
-            ...prev,
-            {
-              id: panelId,
-              type: 'event',
-              event: flyToTarget.event,
-              pos: { x: pt.x - 120, y: pt.y - 160 },
-            },
-          ])
+          setActivePanel({
+            type: 'event',
+            event: flyToTarget.event,
+            pos: { x: pt.x - 120, y: pt.y - 160 },
+          })
         }
       }, 1300)
     }
   }, [flyToTarget])
 
   const handleAircraftClick = useCallback((ac: AircraftState, screenPos: { x: number; y: number }) => {
-    const panelId = `ac-${ac.id}-${Date.now()}`
-    setOpenPanels(prev => [
-      ...prev,
-      {
-        id: panelId,
-        type: 'aircraft',
-        aircraft: ac,
-        pos: screenPos,
-      },
-    ])
+    setActivePanel({
+      type: 'aircraft',
+      aircraft: ac,
+      pos: screenPos,
+    })
   }, [])
 
-  const closePanel = useCallback((panelId: string) => {
-    setOpenPanels(prev => prev.filter(p => p.id !== panelId))
+  const closePanel = useCallback(() => {
+    setActivePanel(null)
+    onPopupClose?.()
+  }, [onPopupClose])
+
+  const handleCopyAllPositions = useCallback(() => {
+    // MAC positions from localStorage (saved by MapMacMarkers on drag)
+    const macRaw = localStorage.getItem('mac-marker-positions')
+    const macPositions = macRaw ? JSON.parse(macRaw) : {}
+    const macText = Object.entries(macPositions).map(([id, pos]) => {
+      const p = pos as { lng: number; lat: number }
+      return `  ${id}: { lat: ${p.lat.toFixed(6)}, lng: ${p.lng.toFixed(6)} }`
+    }).join(',\n')
+
+    // Aircraft positions from localStorage
+    const acRaw = localStorage.getItem('aircraft-marker-positions')
+    const acPositions = acRaw ? JSON.parse(acRaw) : {}
+    const acText = Object.entries(acPositions).map(([id, pos]) => {
+      const p = pos as [number, number]
+      return `  '${id}': [${p[0].toFixed(6)}, ${p[1].toFixed(6)}]`
+    }).join(',\n')
+
+    const parts: string[] = []
+    if (macText) parts.push(`MAC_POSITIONS:\n{\n${macText}\n}`)
+    if (acText) parts.push(`AIRCRAFT_OVERRIDES:\n{\n${acText}\n}`)
+    const output = parts.join('\n\n') || 'No positions changed yet. Drag markers first.'
+    navigator.clipboard.writeText(output)
+    alert('Positions copied to clipboard!')
+    console.log('📍 ALL POSITIONS:', output)
   }, [])
 
   return (
@@ -217,7 +210,6 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         <MapPulse pulseRings={pulseRings} />
         <ThreatTracks tracks={threatTracks} />
         <RadarSweep ewJamming={ewJamming} />
-        <ConnectionArcs arcs={arcs} />
         <AircraftMarkers
           aircraft={worldState?.aircraft}
           draggable={editMode}
@@ -225,32 +217,25 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         />
       </Map>
 
-      {/* Multiple draggable panels */}
-      {openPanels.map(panel => {
-        if (panel.type === 'event' && panel.event) {
-          return (
-            <DraggableEventPanel
-              key={panel.id}
-              event={panel.event}
-              onClose={() => closePanel(panel.id)}
-              initialPos={panel.pos}
-            />
-          )
-        }
-        if (panel.type === 'aircraft' && panel.aircraft) {
-          return (
-            <DraggableAircraftPanel
-              key={panel.id}
-              ac={panel.aircraft}
-              initialPos={panel.pos}
-              onClose={() => closePanel(panel.id)}
-            />
-          )
-        }
-        return null
-      })}
+      {/* Single active panel */}
+      {activePanel?.type === 'event' && activePanel.event && (
+        <DraggableEventPanel
+          key={activePanel.event.id}
+          event={activePanel.event}
+          onClose={closePanel}
+          initialPos={activePanel.pos}
+        />
+      )}
+      {activePanel?.type === 'aircraft' && activePanel.aircraft && (
+        <DraggableAircraftPanel
+          key={activePanel.aircraft.id}
+          ac={activePanel.aircraft}
+          initialPos={activePanel.pos}
+          onClose={closePanel}
+        />
+      )}
 
-      {/* Map style toggle */}
+      {/* Map style toggle + EDIT + COPY */}
       <div className="absolute top-4 left-4 z-30 flex gap-1">
         <button
           onClick={() => setMapStyle('dark')}
@@ -260,7 +245,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
               : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
           }`}
         >
-          TAKTISK
+          TACTICAL
         </button>
         <button
           onClick={() => setMapStyle('satellite')}
@@ -270,7 +255,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
               : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
           }`}
         >
-          SATELLIT
+          SATELLITE
         </button>
         <button
           onClick={() => setEditMode(prev => !prev)}
@@ -282,6 +267,14 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         >
           EDIT
         </button>
+        {editMode && (
+          <button
+            onClick={handleCopyAllPositions}
+            className="px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors bg-cyan-500/20 border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30"
+          >
+            📋 COPY
+          </button>
+        )}
       </div>
 
       {/* Scanline overlay */}
