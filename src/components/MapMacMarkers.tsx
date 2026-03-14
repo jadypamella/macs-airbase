@@ -54,8 +54,20 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
     const validPos = toValidPosition({ lng: e?.lngLat?.lng, lat: e?.lngLat?.lat })
     if (!validPos) return
 
-    setPositions(prev => ({ ...prev, [agentId]: validPos }))
+    setPositions(prev => {
+      const next = { ...prev, [agentId]: validPos }
+      console.log('📍 MAC POSITIONS:', JSON.stringify(next, null, 2))
+      return next
+    })
   }, [])
+
+  const handleCopyPositions = useCallback(() => {
+    const output = Object.entries(positions).map(([id, pos]) =>
+      `  ${id}: { lat: ${pos.lat.toFixed(6)}, lng: ${pos.lng.toFixed(6)} }`
+    ).join(',\n')
+    navigator.clipboard.writeText(`{\n${output}\n}`)
+    alert('Posições copiadas! Cole no chat.')
+  }, [positions])
 
   return (
     <>
