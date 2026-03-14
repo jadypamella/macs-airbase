@@ -38,9 +38,9 @@ interface GaugeDef {
   Icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   labelSv: string
   labelEn: string
-  getValue: (ws: WorldState) => string
-  getColor: (ws: WorldState) => string
-  getPct: (ws: WorldState) => number
+  getValue: (ws: WorldState, cc?: number) => string
+  getColor: (ws: WorldState, cc?: number) => string
+  getPct: (ws: WorldState, cc?: number) => number
 }
 
 const GAUGES: GaugeDef[] = [
