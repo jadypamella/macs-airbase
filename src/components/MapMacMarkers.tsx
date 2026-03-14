@@ -46,6 +46,10 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
     return init
   })
 
+  useEffect(() => {
+    localStorage.removeItem(STORAGE_KEY)
+  }, [])
+
   const handleDragEnd = useCallback((agentId: string, e: any) => {
     const validPos = toValidPosition({ lng: e?.lngLat?.lng, lat: e?.lngLat?.lat })
     if (!validPos) return
