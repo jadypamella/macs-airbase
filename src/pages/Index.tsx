@@ -17,6 +17,7 @@ const Index = () => {
   const { events, agents, connected, scenario, worldState, threatLevel, controlAgent } = useSwarm()
   const [scrambleActive, setScrambleActive] = useState(false)
   const [flyToTarget, setFlyToTarget] = useState<{ lng: number; lat: number; event: SwarmEvent } | null>(null)
+  const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
 
   useEffect(() => {
     const lastScramble = events.filter(e => e.event_type === 'SCRAMBLE_ORDER').at(-1)
@@ -30,14 +31,13 @@ const Index = () => {
   const criticalCount = events.filter(e => e.severity === 'CRITICAL').length
 
   const handleEventClick = useCallback((event: SwarmEvent) => {
-    // Always fly to the MAC agent position for the event source
-    const macPos = MAC_POSITIONS[event.source]
-    const target = macPos
-      ? { lng: macPos.lng, lat: macPos.lat }
-      : null
+    // Toggle expand in list — collapse if same event clicked again
+    setExpandedEventId(prev => prev === event.id ? null : event.id)
 
-    if (target) {
-      setFlyToTarget({ lng: target.lng, lat: target.lat, event })
+    // Fly to MAC agent position if available
+    const macPos = MAC_POSITIONS[event.source]
+    if (macPos) {
+      setFlyToTarget({ lng: macPos.lng, lat: macPos.lat, event })
     }
   }, [])
 
@@ -76,7 +76,7 @@ const Index = () => {
 
           <div className="w-[280px] flex flex-col shrink-0 overflow-hidden bg-surface-card border-l border-white/5">
             <div className="flex-1 overflow-hidden">
-              <EventFeed events={events} onEventClick={handleEventClick} />
+              <EventFeed events={events} onEventClick={handleEventClick} expandedEventId={expandedEventId} />
             </div>
             <div className="border-t border-white/5">
               <EmergenceGraph events={events} />
