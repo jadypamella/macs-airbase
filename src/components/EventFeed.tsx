@@ -7,12 +7,13 @@ import type { SwarmEvent } from '../constants'
 
 interface EventFeedProps {
   events: SwarmEvent[]
+  onEventClick?: (event: SwarmEvent) => void
 }
 
 const SEVERITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 const AGENT_IDS = ['OPS', 'FUEL', 'ARMING', 'MAINT', 'THREAT']
 
-export function EventFeed({ events }: EventFeedProps) {
+export function EventFeed({ events, onEventClick }: EventFeedProps) {
   const { lang } = useLang()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [search, setSearch] = useState('')
@@ -213,7 +214,7 @@ export function EventFeed({ events }: EventFeedProps) {
           </div>
         ) : (
           [...filtered].reverse().slice(0, 80).map(event => (
-            <EventRow key={event.id} event={event} />
+            <EventRow key={event.id} event={event} onClick={onEventClick} />
           ))
         )}
       </div>

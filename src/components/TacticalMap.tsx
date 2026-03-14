@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import Map from 'react-map-gl/maplibre'
+import type { MapRef } from 'react-map-gl/maplibre'
 import { MapZones } from './MapZones'
 import { MapMacMarkers } from './MapMacMarkers'
 import { MapPulse } from './MapPulse'
@@ -22,6 +23,7 @@ interface TacticalMapProps {
   events: SwarmEvent[]
   agents: Record<string, AgentState>
   worldState: WorldState | null
+  flyToTarget: { lng: number; lat: number } | null
 }
 
 const PULSE_COLORS: Record<string, string> = {
@@ -33,7 +35,7 @@ const PULSE_COLORS: Record<string, string> = {
   TASKING_ORDER: '#3b82f6',
 }
 
-export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
+export function TacticalMap({ events, agents, worldState, flyToTarget }: TacticalMapProps) {
   const [pulseRings, setPulseRings] = useState<PulseRing[]>([])
   const [threatTracks, setThreatTracks] = useState<ThreatTrack[]>([])
   const [arcs, setArcs] = useState<Arc[]>([])
@@ -41,6 +43,7 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
   const [dispersalActive, setDispersalActive] = useState(false)
   const [zoneStatuses, setZoneStatuses] = useState<Record<string, string>>({})
   
+  const mapRef = useRef<MapRef>(null)
   const processedRef = useRef<Set<string>>(new Set())
 
   const processNewEvent = useCallback((event: SwarmEvent) => {
@@ -152,9 +155,17 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
     ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
     : SATELLITE_STYLE
 
+  // Fly to target when event is clicked
+  useEffect(() => {
+    if (flyToTarget && mapRef.current) {
+      mapRef.current.flyTo({ center: [flyToTarget.lng, flyToTarget.lat], zoom: 15, duration: 1200 })
+    }
+  }, [flyToTarget])
+
   return (
     <div className="relative flex-1 overflow-hidden">
       <Map
+        ref={mapRef}
         initialViewState={{
           longitude: 15.265,
           latitude: 56.267,

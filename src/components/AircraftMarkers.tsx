@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState, useRef } from 'react'
+import { useMemo } from 'react'
 import { Marker } from 'react-map-gl/maplibre'
 import type { AircraftState, AircraftPhase } from '../constants'
 import { LOCATIONS } from '../data/locations'
@@ -148,22 +148,15 @@ function getPhasePosition(
   }
 }
 
-export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
-  const [time, setTime] = useState(0)
+const GROUND_PHASES = new Set(['SHELTER', 'POST_FLIGHT', 'FUELING', 'ARMING', 'MAINTENANCE', 'GROUNDED', 'PRE_FLIGHT', 'TAXI', 'TAKEOFF', 'LANDING'])
 
-  // Animate airborne aircraft orbit
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(t => t + 2)
-    }, 100)
-    return () => clearInterval(interval)
-  }, [])
+export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
 
   const markers = useMemo(() => {
     if (!aircraft) return []
-    const entries = Object.values(aircraft)
+    // Only show ground-based aircraft
+    const entries = Object.values(aircraft).filter(ac => GROUND_PHASES.has(ac.phase))
 
-    // Count per-phase for slot allocation
     const phaseCounters: Record<string, number> = {}
 
     return entries.map((ac, globalIndex) => {
@@ -171,16 +164,11 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
       const slotIndex = phaseCounters[phase] || 0
       phaseCounters[phase] = slotIndex + 1
 
-      const position = getPhasePosition(phase, slotIndex, ac.heading, globalIndex, time)
+      const position = getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
       return { ...ac, position }
     })
-  }, [aircraft, time])
-
-  // Check if any aircraft is airborne (for orbit animation)
-  const hasAirborne = useMemo(() => {
-    if (!aircraft) return false
-    return Object.values(aircraft).some(ac => ac.phase === 'AIRBORNE' || ac.phase === 'RTB')
   }, [aircraft])
+
 
   return (
     <>
