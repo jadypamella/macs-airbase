@@ -165,7 +165,7 @@ const POSITION_OVERRIDES: Record<string, [number, number]> = {
   'Gripen-05': [15.274118, 56.271807],
 }
 
-export function AircraftMarkers({ aircraft, draggable = false }: AircraftMarkersProps) {
+export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick }: AircraftMarkersProps) {
   const [overrides, setOverrides] = useState<Record<string, [number, number]>>(() => ({
     ...POSITION_OVERRIDES,
     ...loadSavedAc(),
