@@ -31,7 +31,7 @@ const PULSE_COLORS: Record<string, string> = {
   TASKING_ORDER: '#3b82f6',
 }
 
-export function TacticalMap({ events, agents }: TacticalMapProps) {
+export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
   const [pulseRings, setPulseRings] = useState<PulseRing[]>([])
   const [threatTracks, setThreatTracks] = useState<ThreatTrack[]>([])
   const [arcs, setArcs] = useState<Arc[]>([])
