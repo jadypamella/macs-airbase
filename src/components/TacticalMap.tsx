@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import 'maplibre-gl/dist/maplibre-gl.css'
-import Map from 'react-map-gl/maplibre'
 import type { MapRef } from 'react-map-gl/maplibre'
+import 'maplibre-gl/dist/maplibre-gl.css'
+import Map, { Popup } from 'react-map-gl/maplibre'
 import { MapZones } from './MapZones'
 import { MapMacMarkers } from './MapMacMarkers'
 import { MapPulse } from './MapPulse'
@@ -16,14 +16,15 @@ import { AircraftMarkers } from './AircraftMarkers'
 import { MapBuildings3D } from './MapBuildings3D'
 import { ThreatHeatmap } from './ThreatHeatmap'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '../data/locations'
-import { detectCrossDomainRefs, MAC_NAMES } from '../constants'
+import { detectCrossDomainRefs, MAC_NAMES, SEVERITY_COLORS } from '../constants'
 import type { AgentState, SwarmEvent, WorldState } from '../constants'
 
 interface TacticalMapProps {
   events: SwarmEvent[]
   agents: Record<string, AgentState>
   worldState: WorldState | null
-  flyToTarget: { lng: number; lat: number } | null
+  flyToTarget: { lng: number; lat: number; event: SwarmEvent } | null
+  onPopupClose?: () => void
 }
 
 const PULSE_COLORS: Record<string, string> = {
@@ -35,7 +36,7 @@ const PULSE_COLORS: Record<string, string> = {
   TASKING_ORDER: '#3b82f6',
 }
 
-export function TacticalMap({ events, agents, worldState, flyToTarget }: TacticalMapProps) {
+export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupClose }: TacticalMapProps) {
   const [pulseRings, setPulseRings] = useState<PulseRing[]>([])
   const [threatTracks, setThreatTracks] = useState<ThreatTrack[]>([])
   const [arcs, setArcs] = useState<Arc[]>([])
@@ -186,6 +187,49 @@ export function TacticalMap({ events, agents, worldState, flyToTarget }: Tactica
         <RadarSweep ewJamming={ewJamming} />
         <ConnectionArcs arcs={arcs} />
         <AircraftMarkers aircraft={worldState?.aircraft} />
+
+        {/* Event detail popup */}
+        {flyToTarget?.event && (
+          <Popup
+            latitude={flyToTarget.lat}
+            longitude={flyToTarget.lng}
+            anchor="bottom"
+            onClose={() => onPopupClose?.()}
+            closeButton={true}
+            closeOnClick={false}
+            className="event-popup"
+          >
+            <div className="bg-surface-card/95 border border-white/10 p-2 text-[9px] min-w-[200px] max-w-[280px] backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-bold text-text-primary text-[10px]">
+                  {flyToTarget.event.source}
+                </span>
+                <span
+                  className="text-[8px] font-bold tracking-wider px-1 py-0.5 ml-auto"
+                  style={{
+                    color: SEVERITY_COLORS[flyToTarget.event.severity],
+                    backgroundColor: `${SEVERITY_COLORS[flyToTarget.event.severity]}15`,
+                  }}
+                >
+                  {flyToTarget.event.severity}
+                </span>
+              </div>
+              <p className="text-text-muted text-[10px] leading-snug mb-1.5">
+                {flyToTarget.event.payload?.message || flyToTarget.event.event_type}
+              </p>
+              <div className="space-y-0.5 text-text-dim">
+                <div>TYPE: <span className="text-text-muted font-mono">{flyToTarget.event.event_type}</span></div>
+                <div>DOMAIN: <span className="text-text-muted font-mono">{flyToTarget.event.domain}</span></div>
+                {flyToTarget.event.payload && Object.entries(flyToTarget.event.payload)
+                  .filter(([k]) => k !== 'message')
+                  .slice(0, 5)
+                  .map(([k, v]) => (
+                    <div key={k}>{k.toUpperCase()}: <span className="text-text-muted font-mono">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span></div>
+                  ))}
+              </div>
+            </div>
+          </Popup>
+        )}
       </Map>
 
       {/* Map style toggle */}
