@@ -102,7 +102,7 @@ export function WorldStateGauges({ worldState }: WorldStateGaugesProps) {
         return (
           <div
             key={i}
-            className={`flex-1 flex flex-col items-center justify-center border-r border-white/5 last:border-r-0 px-2 ${isCritical ? 'animate-glow-critical' : ''}`}
+            className="flex-1 flex flex-col items-center justify-center border-r border-white/5 last:border-r-0 px-2"
           >
             <gauge.Icon className="w-4 h-4 mb-1" style={{ color }} />
             <div className="text-[8px] font-bold tracking-[0.15em] text-text-muted">
