@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import Map from 'react-map-gl/maplibre'
 import { MapZones } from './MapZones'
