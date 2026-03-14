@@ -24,7 +24,7 @@ export function DispersalRoutes({ active }: DispersalRoutesProps) {
             'line-color': '#8b5cf6',
             'line-width': 3,
             'line-dasharray': [8, 4],
-          } as LinePaint}
+          } as any}
         />
       </Source>
       <Source id="route-charlie" type="geojson" data={DISPERSAL_ROUTE_CHARLIE as GeoJSON.Feature}>
