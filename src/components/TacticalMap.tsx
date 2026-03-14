@@ -132,10 +132,16 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
     ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
     : SATELLITE_STYLE
 
-  // Fly to target — replace any existing panel
+  // Fly to target — close existing panel first, then fly, then open new panel
   useEffect(() => {
     if (flyToTarget && mapRef.current) {
+      // 1) Close any existing panel immediately
+      setActivePanel(null)
+
+      // 2) Fly to the new location
       mapRef.current.flyTo({ center: [flyToTarget.lng, flyToTarget.lat], zoom: 15, duration: 1200 })
+
+      // 3) Open new panel after flight animation completes
       setTimeout(() => {
         if (mapRef.current) {
           const pt = mapRef.current.project([flyToTarget.lng, flyToTarget.lat])
