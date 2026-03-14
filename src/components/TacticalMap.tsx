@@ -143,7 +143,7 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
     ],
   }), [])
 
-  const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('dark')
+  const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('satellite')
 
   const activeStyle = mapStyle === 'dark'
     ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
