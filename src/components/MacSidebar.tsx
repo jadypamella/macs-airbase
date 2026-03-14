@@ -15,11 +15,13 @@ const SEVERITY_LABELS_EN: Record<string, string> = {
 interface MacSidebarProps {
   agents: Record<string, AgentState>
   events: SwarmEvent[]
+  onKill?: (agentId: string) => void
+  onRevive?: (agentId: string) => void
 }
 
 const AGENT_IDS = ['OPS', 'FUEL', 'ARMING', 'MAINT', 'THREAT']
 
-export function MacSidebar({ agents, events }: MacSidebarProps) {
+export function MacSidebar({ agents, events, onKill, onRevive }: MacSidebarProps) {
   const { lang } = useLang()
   const severityCounts: Record<string, number> = {}
   for (const e of events) {
@@ -38,7 +40,7 @@ export function MacSidebar({ agents, events }: MacSidebarProps) {
 
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {AGENT_IDS.map(id => (
-          <MacCard key={id} agentId={id} agent={agents[id]} />
+          <MacCard key={id} agentId={id} agent={agents[id]} onKill={onKill} onRevive={onRevive} />
         ))}
       </div>
 

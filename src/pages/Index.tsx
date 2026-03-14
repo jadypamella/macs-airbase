@@ -31,7 +31,7 @@ function extractAircraftId(event: SwarmEvent): string | null {
 }
 
 const Index = () => {
-  const { events, agents, connected, scenario, worldState, threatLevel } = useSwarm()
+  const { events, agents, connected, scenario, worldState, threatLevel, sendCommand } = useSwarm()
   const [scrambleActive, setScrambleActive] = useState(false)
   const [flyToTarget, setFlyToTarget] = useState<{ lng: number; lat: number; event: SwarmEvent } | null>(null)
 
@@ -90,6 +90,14 @@ const Index = () => {
     }
   }, [])
 
+  const handleKill = useCallback((agentId: string) => {
+    sendCommand({ type: 'kill', agent: agentId })
+  }, [sendCommand])
+
+  const handleRevive = useCallback((agentId: string) => {
+    sendCommand({ type: 'revive', agent: agentId })
+  }, [sendCommand])
+
   return (
     <LangProvider>
       <div className="h-screen w-screen flex flex-col bg-surface-primary overflow-hidden">
@@ -102,7 +110,7 @@ const Index = () => {
         />
 
         <div className="flex flex-1 min-h-0">
-          <MacSidebar agents={agents} events={events} />
+          <MacSidebar agents={agents} events={events} onKill={handleKill} onRevive={handleRevive} />
 
           <div className="flex-1 flex flex-col min-w-0">
             <TacticalMap
