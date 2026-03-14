@@ -44,11 +44,11 @@ const Index = () => {
             <WorldStateGauges worldState={worldState} />
           </div>
 
-          <div className="w-[280px] flex flex-col shrink-0 overflow-hidden">
+          <div className="w-[280px] flex flex-col shrink-0 overflow-hidden bg-surface-card border-l border-white/5">
             <div className="flex-1 overflow-hidden">
               <EventFeed events={events} />
             </div>
-            <div className="bg-surface-card border-l border-white/5 border-t border-white/5">
+            <div className="border-t border-white/5">
               <EmergenceGraph events={events} />
             </div>
           </div>
