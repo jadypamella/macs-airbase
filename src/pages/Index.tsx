@@ -21,6 +21,7 @@ const Index = () => {
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
+  const [gaugesOpen, setGaugesOpen] = useState(true)
 
   useEffect(() => {
     const lastScramble = events.filter(e => e.event_type === 'SCRAMBLE_ORDER').at(-1)
