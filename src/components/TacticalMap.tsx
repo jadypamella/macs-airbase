@@ -188,58 +188,12 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         <ConnectionArcs arcs={arcs} />
         <AircraftMarkers aircraft={worldState?.aircraft} />
 
-        {/* Event detail popup */}
-        {flyToTarget?.event && (
-          <Popup
-            latitude={flyToTarget.lat}
-            longitude={flyToTarget.lng}
-            anchor="bottom"
-            onClose={() => onPopupClose?.()}
-            closeButton={false}
-            closeOnClick={false}
-            maxWidth="260px"
-          >
-            <div
-              className="p-2.5 text-[9px] font-mono"
-              style={{
-                background: 'hsl(215 40% 8% / 0.95)',
-                border: '1px solid hsl(220 14% 30% / 0.3)',
-                backdropFilter: 'blur(8px)',
-                maxWidth: '250px',
-              }}
-            >
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="font-bold text-[10px]" style={{ color: '#e2e8f0' }}>
-                  {flyToTarget.event.source}
-                </span>
-                <span
-                  className="text-[8px] font-bold tracking-wider px-1 py-0.5 ml-auto"
-                  style={{
-                    color: SEVERITY_COLORS[flyToTarget.event.severity],
-                    backgroundColor: `${SEVERITY_COLORS[flyToTarget.event.severity]}15`,
-                  }}
-                >
-                  {flyToTarget.event.severity}
-                </span>
-                <button
-                  onClick={() => onPopupClose?.()}
-                  className="text-[12px] leading-none opacity-50 hover:opacity-100"
-                  style={{ color: '#94a3b8' }}
-                >
-                  ✕
-                </button>
-              </div>
-              <p className="text-[10px] leading-snug mb-1.5" style={{ color: '#94a3b8' }}>
-                {flyToTarget.event.payload?.message || flyToTarget.event.event_type}
-              </p>
-              <div className="space-y-0.5" style={{ color: '#64748b' }}>
-                <div>TYPE: <span style={{ color: '#94a3b8' }}>{flyToTarget.event.event_type}</span></div>
-                <div>DOMAIN: <span style={{ color: '#94a3b8' }}>{flyToTarget.event.domain}</span></div>
-              </div>
-            </div>
-          </Popup>
-        )}
       </Map>
+
+      {/* Draggable event detail panel */}
+      {flyToTarget?.event && (
+        <DraggableEventPanel event={flyToTarget.event} onClose={() => onPopupClose?.()} />
+      )}
 
       {/* Map style toggle */}
       <div className="absolute top-4 left-4 z-30 flex gap-1">
