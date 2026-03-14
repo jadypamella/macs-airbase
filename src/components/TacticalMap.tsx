@@ -166,6 +166,8 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
         mapStyle={activeStyle as any}
       >
         <MapZones zoneStatuses={zoneStatuses} />
+        <MapBuildings3D visible={show3D} />
+        <ThreatHeatmap events={events} />
         <DispersalRoutes active={dispersalActive} />
         <MapMacMarkers agents={agents} />
         <MapPulse pulseRings={pulseRings} />
