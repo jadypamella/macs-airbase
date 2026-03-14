@@ -1,28 +1,16 @@
 import { useMemo } from 'react'
 import { Marker } from 'react-map-gl/maplibre'
 import type { AircraftState } from '../constants'
-import { DISPERSAL_ROUTE_BRAVO, DISPERSAL_ROUTE_CHARLIE } from '../data/routes'
+
 
 interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
 }
 
 // Positions along the takeoff runway centerline (west ↔ east)
-// Positions along the main runway centerline (SW → NE)
-const GROUND_POSITIONS: [number, number][] = [
-  [15.2450, 56.2635],
-  [15.2490, 56.2643],
-  [15.2530, 56.2651],
-  [15.2570, 56.2659],
-  [15.2610, 56.2667],
-  [15.2650, 56.2675],
-  [15.2690, 56.2683],
-  [15.2730, 56.2691],
-  [15.2770, 56.2699],
-  [15.2810, 56.2707],
-  [15.2850, 56.2715],
-  [15.2890, 56.2723],
-]
+// Linha de dispersão solicitada (SW → NE), ajustável por 2 pontos
+const RED_LINE_START: [number, number] = [15.2595, 56.2618]
+const RED_LINE_END: [number, number] = [15.2758, 56.2706]
 
 const PHASE_COLORS: Record<string, string> = {
   AIRBORNE: '#22d3ee',
@@ -39,20 +27,10 @@ const PHASE_COLORS: Record<string, string> = {
   GROUNDED: '#ef4444',
 }
 
-// Runway endpoints (SW → NE)
-const RUNWAY_START: [number, number] = [15.2450, 56.2635]
-const RUNWAY_END: [number, number] = [15.2890, 56.2723]
-
-function getAircraftPosition(ac: AircraftState, index: number, total: number): [number, number] {
-  if (ac.phase === 'AIRBORNE' || ac.phase === 'RTB') {
-    const rad = (ac.heading * Math.PI) / 180
-    const dist = 0.02 + (index * 0.008)
-    return [15.265 + Math.sin(rad) * dist, 56.267 + Math.cos(rad) * dist * 0.6]
-  }
-  // Distribute evenly along the full runway
+function getAircraftPosition(index: number, total: number): [number, number] {
   const t = total > 1 ? index / (total - 1) : 0.5
-  const lng = RUNWAY_START[0] + (RUNWAY_END[0] - RUNWAY_START[0]) * t
-  const lat = RUNWAY_START[1] + (RUNWAY_END[1] - RUNWAY_START[1]) * t
+  const lng = RED_LINE_START[0] + (RED_LINE_END[0] - RED_LINE_START[0]) * t
+  const lat = RED_LINE_START[1] + (RED_LINE_END[1] - RED_LINE_START[1]) * t
   return [lng, lat]
 }
 
@@ -60,15 +38,11 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
   const markers = useMemo(() => {
     if (!aircraft) return []
     const entries = Object.values(aircraft)
-    const groundEntries = entries.filter(ac => ac.phase !== 'AIRBORNE' && ac.phase !== 'RTB')
-    const totalGround = groundEntries.length
-    let groundIdx = 0
-    return entries.map((ac, i) => {
-      const isGround = ac.phase !== 'AIRBORNE' && ac.phase !== 'RTB'
-      const pos = getAircraftPosition(ac, isGround ? groundIdx : i, totalGround)
-      if (isGround) groundIdx++
-      return { ...ac, position: pos }
-    })
+    const total = entries.length
+    return entries.map((ac, i) => ({
+      ...ac,
+      position: getAircraftPosition(i, total),
+    }))
   }, [aircraft])
 
   return (
