@@ -88,16 +88,16 @@ const GAUGES: GaugeDef[] = [
   },
 ]
 
-export function WorldStateGauges({ worldState }: WorldStateGaugesProps) {
+export function WorldStateGauges({ worldState, criticalCount }: WorldStateGaugesProps) {
   const { lang } = useLang()
   const ws = worldState || {} as WorldState
 
   return (
     <div className="h-[100px] bg-surface-card border-t border-white/5 flex items-stretch shrink-0">
       {GAUGES.map((gauge, i) => {
-        const color = gauge.getColor(ws)
-        const value = gauge.getValue(ws)
-        const pct = gauge.getPct(ws)
+        const color = gauge.getColor(ws, criticalCount)
+        const value = gauge.getValue(ws, criticalCount)
+        const pct = gauge.getPct(ws, criticalCount)
         const isCritical = color === '#ef4444'
 
         return (
