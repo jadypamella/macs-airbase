@@ -98,7 +98,7 @@ const Index = () => {
                   : <ChevronUp size={12} className="text-muted-foreground" />}
               </button>
               <div className={`transition-all duration-300 overflow-hidden ${gaugesOpen ? 'h-[100px]' : 'h-0'}`}>
-                <WorldStateGauges worldState={worldState} />
+                <WorldStateGauges worldState={worldState} criticalCount={criticalCount} />
               </div>
             </div>
           </div>
