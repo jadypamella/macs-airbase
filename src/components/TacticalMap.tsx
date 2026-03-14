@@ -11,9 +11,10 @@ import type { ThreatTrack } from './ThreatTracks'
 import { ConnectionArcs } from './ConnectionArcs'
 import type { Arc } from './ConnectionArcs'
 import { DispersalRoutes } from './DispersalRoutes'
+import { AircraftMarkers } from './AircraftMarkers'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '../data/locations'
 import { detectCrossDomainRefs, MAC_NAMES } from '../constants'
-import type { AgentState, SwarmEvent } from '../constants'
+import type { AgentState, SwarmEvent, WorldState } from '../constants'
 
 interface TacticalMapProps {
   events: SwarmEvent[]
