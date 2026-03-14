@@ -198,6 +198,7 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
           }`}
         >
           SATELLIT
+        </button>
       </div>
 
       {/* Scanline overlay */}
