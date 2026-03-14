@@ -11,8 +11,12 @@ import { ThreatTracks } from './ThreatTracks'
 import type { ThreatTrack } from './ThreatTracks'
 import { DispersalRoutes } from './DispersalRoutes'
 import { AircraftMarkers } from './AircraftMarkers'
+import { ScrambleAircraft } from './ScrambleAircraft'
+import { ScrambleSelector } from './ScrambleSelector'
 import { MapBuildings3D } from './MapBuildings3D'
+import { RunwayRoutes } from './RunwayRoutes'
 import { ThreatHeatmap } from './ThreatHeatmap'
+import { useScrambleSimulation } from '../hooks/useScrambleSimulation'
 import { DraggableEventPanel } from './DraggableEventPanel'
 import { DraggableAircraftPanel } from './DraggableAircraftPanel'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '../data/locations'
@@ -51,6 +55,10 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
 
   const mapRef = useRef<MapRef>(null)
   const processedRef = useRef<Set<string>>(new Set())
+
+  // Scramble simulation
+  const scrambleSim = useScrambleSimulation()
+  const scrambleTriggeredRef = useRef<Set<string>>(new Set())
 
   const processNewEvent = useCallback((event: SwarmEvent) => {
     if (processedRef.current.has(event.id)) return
@@ -97,7 +105,15 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
     if (event.event_type === 'SCRAMBLE_ORDER' || event.event_type === 'TASKING_ORDER') {
       setZoneStatuses(prev => ({ ...prev, 'runway-zone': 'warning' }))
     }
-  }, [])
+
+    // Auto-trigger scramble simulation on SCRAMBLE_ORDER
+    if (event.event_type === 'SCRAMBLE_ORDER' && !scrambleTriggeredRef.current.has(event.id)) {
+      scrambleTriggeredRef.current.add(event.id)
+      if (!scrambleSim.isRunning) {
+        scrambleSim.startScramble()
+      }
+    }
+  }, [scrambleSim])
 
   useEffect(() => {
     events.forEach(processNewEvent)
@@ -227,6 +243,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         mapStyle={activeStyle as any}
       >
         <MapZones zoneStatuses={zoneStatuses} />
+        <RunwayRoutes />
         <MapBuildings3D visible={true} />
         <ThreatHeatmap events={events} />
         <DispersalRoutes active={dispersalActive} />
@@ -238,7 +255,14 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
           aircraft={worldState?.aircraft}
           draggable={editMode}
           onAircraftClick={handleAircraftClick}
+          hideIds={scrambleSim.simulatedIds}
         />
+        {scrambleSim.aircraft.length > 0 && (
+          <ScrambleAircraft
+            aircraft={scrambleSim.aircraft}
+            elapsedMs={scrambleSim.elapsedMs}
+          />
+        )}
       </Map>
 
       {/* Single active panel */}
@@ -299,6 +323,35 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
             COPY
           </button>
         )} */}
+        {/* Scramble simulation controls */}
+        <div className="ml-2 border-l border-white/10 pl-2 flex gap-1">
+          {!scrambleSim.isRunning ? (
+            <ScrambleSelector
+              aircraft={worldState?.aircraft}
+              onScramble={(ids) => scrambleSim.startScramble(ids)}
+            />
+          ) : (
+            <>
+              {!scrambleSim.isReturning ? (
+                <button
+                  onClick={scrambleSim.recallScramble}
+                  className="px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors bg-amber-500/20 border-amber-500/50 text-amber-400 hover:bg-amber-500/30"
+                >
+                  RECALL
+                </button>
+              ) : (
+                <div className="px-2 py-1.5 text-[9px] font-mono text-amber-400/80 border border-amber-500/20 bg-amber-500/5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  RTB
+                </div>
+              )}
+              <div className="px-2 py-1.5 text-[9px] font-mono text-red-400/80 border border-red-500/20 bg-red-500/5 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                LIVE {Math.floor(scrambleSim.elapsedMs / 1000)}s
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Scanline overlay */}

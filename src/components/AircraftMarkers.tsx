@@ -1,6 +1,16 @@
 import { useMemo, useState, useCallback } from 'react'
 import { Marker } from 'react-map-gl/maplibre'
 import type { AircraftState, AircraftPhase } from '../constants'
+import {
+  RWY01_THRESHOLD,
+  RWY19_THRESHOLD,
+  RWY_EXIT_MID,
+  RWY_EXIT_NORTH,
+  RWY_NORTH_HP,
+  RWY_SOUTH_HP,
+  APRON_NORTH,
+  APRON_CENTRAL,
+} from '../data/runway-geometry'
 
 
 const AC_STORAGE_KEY = 'aircraft-marker-positions'
@@ -9,6 +19,7 @@ interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
   draggable?: boolean
   onAircraftClick?: (ac: AircraftState, screenPos: { x: number; y: number }) => void
+  hideIds?: Set<string>
 }
 
 function loadSavedAc(): Record<string, [number, number]> {
@@ -55,9 +66,9 @@ const MAINT_POSITIONS: [number, number][] = [
   [15.2718, 56.2647],
 ]
 
-// Runway centerline for TAXI / TAKEOFF / LANDING
-const RUNWAY_SW: [number, number] = [15.2480, 56.2635]
-const RUNWAY_NE: [number, number] = [15.2830, 56.2720]
+// Runway centerline for TAXI / TAKEOFF / LANDING — real ESDF coordinates
+const RUNWAY_SW = RWY01_THRESHOLD  // south threshold
+const RUNWAY_NE = RWY19_THRESHOLD  // north threshold
 
 function lerpRunway(t: number): [number, number] {
   return [
@@ -66,8 +77,11 @@ function lerpRunway(t: number): [number, number] {
   ]
 }
 
-// Base center for airborne orbit
-const BASE_CENTER: [number, number] = [15.2715, 56.2673]
+// Base center for airborne orbit (midpoint of runway)
+const BASE_CENTER: [number, number] = [
+  (RWY01_THRESHOLD[0] + RWY19_THRESHOLD[0]) / 2,
+  (RWY01_THRESHOLD[1] + RWY19_THRESHOLD[1]) / 2,
+]
 
 /* ── Phase → color ── */
 const PHASE_COLORS: Record<string, string> = {
@@ -124,21 +138,23 @@ function getPhasePosition(
       return MAINT_POSITIONS[slotIndex % MAINT_POSITIONS.length]
 
     case 'PRE_FLIGHT':
-      // Near shelter, slightly toward runway
-      const shelter = SHELTER_POSITIONS[slotIndex % SHELTER_POSITIONS.length]
-      return [shelter[0] + 0.003, shelter[1] - 0.002]
+      // On the parallel taxiway, between shelter and runway
+      return [APRON_CENTRAL[0] + (slotIndex * 0.0005), APRON_CENTRAL[1] + (slotIndex * 0.0003)]
 
     case 'TAXI':
-      // Moving along runway - use slot to space them
-      return lerpRunway(0.1 + (slotIndex * 0.15))
+      // Positioned along taxiway route: apron → holding point → runway
+      // Space aircraft along the taxiway network using real waypoints
+      const taxiPoints: [number, number][] = [APRON_CENTRAL, RWY_EXIT_MID, RWY_NORTH_HP]
+      const taxiIdx = slotIndex % taxiPoints.length
+      return taxiPoints[taxiIdx]
 
     case 'TAKEOFF':
-      // Far end of runway
-      return lerpRunway(0.7 + (slotIndex * 0.1))
+      // On the runway, rolling toward north end
+      return lerpRunway(0.75 + (slotIndex * 0.08))
 
     case 'LANDING':
-      // Approaching runway
-      return lerpRunway(0.3 + (slotIndex * 0.1))
+      // On the runway after touchdown, decelerating toward exit
+      return lerpRunway(0.35 + (slotIndex * 0.1))
 
     case 'AIRBORNE':
     case 'RTB': {
@@ -168,7 +184,7 @@ const POSITION_OVERRIDES: Record<string, [number, number]> = {
   'Gripen-06': [15.264870, 56.265781],
 }
 
-export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick }: AircraftMarkersProps) {
+export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick, hideIds }: AircraftMarkersProps) {
   const [overrides, setOverrides] = useState<Record<string, [number, number]>>(() => {
     const saved = loadSavedAc()
     // Merge: POSITION_OVERRIDES always wins, saved only for non-overridden aircraft
@@ -181,7 +197,9 @@ export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick }
 
   const markers = useMemo(() => {
     if (!aircraft) return []
-    const entries = Object.values(aircraft).filter(ac => GROUND_PHASES.has(ac.phase))
+    const entries = Object.values(aircraft)
+      .filter(ac => GROUND_PHASES.has(ac.phase))
+      .filter(ac => !hideIds || !hideIds.has(ac.id))
     const phaseCounters: Record<string, number> = {}
     return entries.map((ac, globalIndex) => {
       const phase = ac.phase
