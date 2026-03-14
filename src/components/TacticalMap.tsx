@@ -22,6 +22,7 @@ interface TacticalMapProps {
   events: SwarmEvent[]
   agents: Record<string, AgentState>
   worldState: WorldState | null
+  flyToTarget: { lng: number; lat: number } | null
 }
 
 const PULSE_COLORS: Record<string, string> = {
