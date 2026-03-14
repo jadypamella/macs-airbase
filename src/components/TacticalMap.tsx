@@ -43,6 +43,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget }: Tactica
   const [dispersalActive, setDispersalActive] = useState(false)
   const [zoneStatuses, setZoneStatuses] = useState<Record<string, string>>({})
   
+  const mapRef = useRef<MapRef>(null)
   const processedRef = useRef<Set<string>>(new Set())
 
   const processNewEvent = useCallback((event: SwarmEvent) => {
