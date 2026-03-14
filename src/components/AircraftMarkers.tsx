@@ -148,16 +148,9 @@ function getPhasePosition(
   }
 }
 
-export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
-  const [time, setTime] = useState(0)
+const GROUND_PHASES = new Set(['SHELTER', 'POST_FLIGHT', 'FUELING', 'ARMING', 'MAINTENANCE', 'GROUNDED', 'PRE_FLIGHT', 'TAXI', 'TAKEOFF', 'LANDING'])
 
-  // Animate airborne aircraft orbit
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(t => t + 2)
-    }, 100)
-    return () => clearInterval(interval)
-  }, [])
+export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
 
   const markers = useMemo(() => {
     if (!aircraft) return []
