@@ -90,5 +90,11 @@ export function useSwarm() {
     .filter(e => e.domain === 'THREAT' && e.payload?.threat_level)
     .at(-1)?.payload?.threat_level || 'GREEN'
 
-  return { events, agents, connected, scenario, worldState, threatLevel }
+  const sendCommand = useCallback((command: Record<string, unknown>) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(command))
+    }
+  }, [])
+
+  return { events, agents, connected, scenario, worldState, threatLevel, sendCommand }
 }
