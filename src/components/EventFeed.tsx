@@ -54,13 +54,17 @@ export function EventFeed({ events, onEventClick }: EventFeedProps) {
     })
   }
 
-  // Extract aircraft IDs mentioned in events
+  // Extract aircraft IDs mentioned in events (normalize to Gripen-XX format)
   const aircraftIds = useMemo(() => {
     const ids = new Set<string>()
     for (const e of events) {
       const msg = e.payload?.message || ''
       const matches = msg.match(/Gripen-\d+/gi)
-      if (matches) matches.forEach((m: string) => ids.add(m))
+      if (matches) matches.forEach((m: string) => {
+        // Normalize: capitalize first letter
+        const normalized = m.charAt(0).toUpperCase() + m.slice(1).toLowerCase()
+        ids.add(normalized.replace('ripen', 'ripen'))
+      })
     }
     return Array.from(ids).sort()
   }, [events])
