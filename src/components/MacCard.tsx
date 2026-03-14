@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { MAC_NAMES } from '../constants'
+import { useLang } from '@/hooks/useLang'
 import type { AgentState } from '../constants'
 
 interface MacCardProps {
@@ -8,6 +9,7 @@ interface MacCardProps {
 }
 
 export function MacCard({ agentId, agent }: MacCardProps) {
+  const { lang } = useLang()
   const mac = MAC_NAMES[agentId]
   if (!mac) return null
   const Icon = mac.Icon
@@ -16,9 +18,9 @@ export function MacCard({ agentId, agent }: MacCardProps) {
   const isActive = agent?.status === 'active'
 
   const statusLabel = isOffline ? 'OFFLINE'
-    : isActive ? 'AKTIV / Active'
+    : isActive ? (lang === 'sv' ? 'AKTIV' : 'ACTIVE')
     : agent?.status === 'online' ? 'ONLINE'
-    : 'VÄNTAR / Waiting'
+    : (lang === 'sv' ? 'VÄNTAR' : 'WAITING')
 
   const statusColor = isOffline ? 'text-status-red'
     : isActive ? 'text-ops'
@@ -38,18 +40,22 @@ export function MacCard({ agentId, agent }: MacCardProps) {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4" style={{ color: mac.color }} />
-          <span className="text-xs font-bold tracking-wider text-text-primary uppercase">{mac.nameSv}</span>
+          <span className="text-xs font-bold tracking-wider text-text-primary uppercase">
+            {lang === 'sv' ? mac.nameSv : mac.name}
+          </span>
         </div>
         <span className={`text-[9px] font-bold tracking-wider ${statusColor}`}>
           {statusLabel}
         </span>
       </div>
       {!isOffline && (
-        <p className="text-[10px] text-text-muted leading-tight mb-1.5">{mac.taglineSv}</p>
+        <p className="text-[10px] text-text-muted leading-tight mb-1.5">
+          {lang === 'sv' ? mac.taglineSv : mac.tagline}
+        </p>
       )}
       <div className="flex items-center justify-between text-[9px] text-text-dim">
-        <span>ÅTGÄRDER: {agent?.actionCount ?? 0}</span>
-        {elapsed !== null && <span>SENAST: {elapsed}s</span>}
+        <span>{lang === 'sv' ? 'ÅTGÄRDER' : 'ACTIONS'}: {agent?.actionCount ?? 0}</span>
+        {elapsed !== null && <span>{lang === 'sv' ? 'SENAST' : 'LAST'}: {elapsed}s</span>}
       </div>
     </motion.div>
   )
