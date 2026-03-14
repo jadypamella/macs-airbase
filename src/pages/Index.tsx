@@ -17,6 +17,7 @@ const Index = () => {
   const { events, agents, connected, scenario, worldState, threatLevel, controlAgent } = useSwarm()
   const [scrambleActive, setScrambleActive] = useState(false)
   const [flyToTarget, setFlyToTarget] = useState<{ lng: number; lat: number; event: SwarmEvent } | null>(null)
+  const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
 
   useEffect(() => {
     const lastScramble = events.filter(e => e.event_type === 'SCRAMBLE_ORDER').at(-1)
