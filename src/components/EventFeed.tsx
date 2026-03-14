@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { EventRow } from './EventRow'
 import { MAC_NAMES, SEVERITY_COLORS } from '../constants'
