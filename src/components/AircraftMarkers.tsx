@@ -161,10 +161,10 @@ const GROUND_PHASES = new Set(['SHELTER', 'POST_FLIGHT', 'FUELING', 'ARMING', 'M
 /* Fixed position overrides set by user */
 const POSITION_OVERRIDES: Record<string, [number, number]> = {
   'Gripen-01': [15.275611, 56.268341],
-  'Gripen-02': [15.270601, 56.266787],
-  'Gripen-03': [15.263712, 56.261626],
-  'Gripen-04': [15.264142, 56.263601],
-  'Gripen-05': [15.275598, 56.270894],
+  'Gripen-02': [15.270269, 56.266204],
+  'Gripen-03': [15.264073, 56.262692],
+  'Gripen-04': [15.264410, 56.264218],
+  'Gripen-05': [15.270799, 56.270064],
   'Gripen-06': [15.264870, 56.265781],
 }
 
