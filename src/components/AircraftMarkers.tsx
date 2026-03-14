@@ -38,15 +38,11 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
   const markers = useMemo(() => {
     if (!aircraft) return []
     const entries = Object.values(aircraft)
-    const groundEntries = entries.filter(ac => ac.phase !== 'AIRBORNE' && ac.phase !== 'RTB')
-    const totalGround = groundEntries.length
-    let groundIdx = 0
-    return entries.map((ac, i) => {
-      const isGround = ac.phase !== 'AIRBORNE' && ac.phase !== 'RTB'
-      const pos = getAircraftPosition(ac, isGround ? groundIdx : i, totalGround)
-      if (isGround) groundIdx++
-      return { ...ac, position: pos }
-    })
+    const total = entries.length
+    return entries.map((ac, i) => ({
+      ...ac,
+      position: getAircraftPosition(i, total),
+    }))
   }, [aircraft])
 
   return (
