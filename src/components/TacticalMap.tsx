@@ -18,7 +18,7 @@ import { ThreatHeatmap } from './ThreatHeatmap'
 import { DraggableEventPanel } from './DraggableEventPanel'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '../data/locations'
 import { detectCrossDomainRefs, MAC_NAMES, SEVERITY_COLORS } from '../constants'
-import type { AgentState, SwarmEvent, WorldState } from '../constants'
+import type { AgentState, SwarmEvent, WorldState, AircraftState } from '../constants'
 
 interface TacticalMapProps {
   events: SwarmEvent[]
