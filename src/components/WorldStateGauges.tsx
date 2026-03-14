@@ -8,6 +8,7 @@ import type { WorldState } from '../constants'
 
 interface WorldStateGaugesProps {
   worldState: WorldState | null
+  criticalCount?: number
 }
 
 // Reusable jet SVG icon component matching the map aircraft markers
@@ -37,9 +38,9 @@ interface GaugeDef {
   Icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   labelSv: string
   labelEn: string
-  getValue: (ws: WorldState) => string
-  getColor: (ws: WorldState) => string
-  getPct: (ws: WorldState) => number
+  getValue: (ws: WorldState, cc?: number) => string
+  getColor: (ws: WorldState, cc?: number) => string
+  getPct: (ws: WorldState, cc?: number) => number
 }
 
 const GAUGES: GaugeDef[] = [
@@ -75,9 +76,9 @@ const GAUGES: GaugeDef[] = [
   },
   {
     Icon: ShieldExclamationIcon, labelSv: 'HOTBILD', labelEn: 'THREAT',
-    getValue: ws => ws.threat?.level ?? 'GREEN',
-    getColor: ws => { const l = ws.threat?.level ?? 'GREEN'; return l === 'RED' ? '#ef4444' : l === 'AMBER' ? '#f59e0b' : '#22c55e' },
-    getPct: ws => { const l = ws.threat?.level ?? 'GREEN'; return l === 'RED' ? 100 : l === 'AMBER' ? 60 : 20 },
+    getValue: (ws, cc) => { const l = ws.threat?.level ?? 'GREEN'; return (cc && cc > 0) ? 'RED' : l },
+    getColor: (ws, cc) => { if (cc && cc > 0) return '#ef4444'; const l = ws.threat?.level ?? 'GREEN'; return l === 'RED' ? '#ef4444' : l === 'AMBER' ? '#f59e0b' : '#22c55e' },
+    getPct: (ws, cc) => { if (cc && cc > 0) return 100; const l = ws.threat?.level ?? 'GREEN'; return l === 'RED' ? 100 : l === 'AMBER' ? 60 : 20 },
   },
   {
     Icon: SignalIcon, labelSv: 'RADAR', labelEn: 'RADAR',
@@ -87,16 +88,16 @@ const GAUGES: GaugeDef[] = [
   },
 ]
 
-export function WorldStateGauges({ worldState }: WorldStateGaugesProps) {
+export function WorldStateGauges({ worldState, criticalCount }: WorldStateGaugesProps) {
   const { lang } = useLang()
   const ws = worldState || {} as WorldState
 
   return (
     <div className="h-[100px] bg-surface-card border-t border-white/5 flex items-stretch shrink-0">
       {GAUGES.map((gauge, i) => {
-        const color = gauge.getColor(ws)
-        const value = gauge.getValue(ws)
-        const pct = gauge.getPct(ws)
+        const color = gauge.getColor(ws, criticalCount)
+        const value = gauge.getValue(ws, criticalCount)
+        const pct = gauge.getPct(ws, criticalCount)
         const isCritical = color === '#ef4444'
 
         return (
