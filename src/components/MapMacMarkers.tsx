@@ -71,6 +71,20 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
 
   return (
     <>
+      {draggable && (
+        <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 50 }}>
+          <button
+            onClick={handleCopyPositions}
+            style={{
+              background: '#06b6d4', color: '#000', padding: '6px 12px',
+              borderRadius: 4, fontWeight: 'bold', fontSize: 12, cursor: 'pointer', border: 'none'
+            }}
+          >
+            📋 Copiar Posições
+          </button>
+        </div>
+      )}
+    <>
       {Object.entries(positions).map(([agentId, pos]) => {
         const mac = MAC_NAMES[agentId]
         if (!mac) return null
