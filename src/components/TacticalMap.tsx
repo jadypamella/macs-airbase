@@ -40,7 +40,7 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
   const [ewJamming, setEwJamming] = useState(false)
   const [dispersalActive, setDispersalActive] = useState(false)
   const [zoneStatuses, setZoneStatuses] = useState<Record<string, string>>({})
-  const [show3D, setShow3D] = useState(true)
+  
   const processedRef = useRef<Set<string>>(new Set())
 
   const processNewEvent = useCallback((event: SwarmEvent) => {
