@@ -15,15 +15,6 @@ interface MapMacMarkersProps {
 }
 
 function toValidPosition(value: unknown): { lng: number; lat: number } | null {
-  if (Array.isArray(value) && value.length >= 2) {
-    const lng = Number(value[0])
-    const lat = Number(value[1])
-    if (Number.isFinite(lng) && Number.isFinite(lat) && lng >= LON_MIN && lng <= LON_MAX && lat >= LAT_MIN && lat <= LAT_MAX) {
-      return { lng, lat }
-    }
-    return null
-  }
-
   if (value && typeof value === 'object') {
     const obj = value as Record<string, unknown>
     const lng = Number(obj.lng ?? obj.x)
@@ -32,7 +23,6 @@ function toValidPosition(value: unknown): { lng: number; lat: number } | null {
       return { lng, lat }
     }
   }
-
   return null
 }
 
@@ -55,8 +45,9 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
 
     setPositions(prev => {
       const next = { ...prev, [agentId]: validPos }
-      console.log('📍 MAC POSITIONS — cole isso no chat para salvar:')
-      console.log(JSON.stringify(
+      // Store in localStorage so the COPY button in TacticalMap can read them
+      localStorage.setItem('mac-marker-positions', JSON.stringify(next))
+      console.log('📍 MAC POSITIONS updated:', JSON.stringify(
         Object.fromEntries(
           Object.entries(next).map(([id, p]) => [id, { lat: Number(p.lat.toFixed(6)), lng: Number(p.lng.toFixed(6)) }])
         ), null, 2
@@ -65,31 +56,8 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
     })
   }, [])
 
-  const handleCopyPositions = useCallback(() => {
-    const output = Object.entries(positions).map(([id, pos]) =>
-      `  ${id}: { lat: ${pos.lat.toFixed(6)}, lng: ${pos.lng.toFixed(6)} }`
-    ).join(',\n')
-    const text = `{\n${output}\n}`
-    navigator.clipboard.writeText(text)
-    alert('Posições copiadas para o clipboard! Cole no chat.')
-    console.log('📍 MAC_POSITIONS para colar:', text)
-  }, [positions])
-
   return (
     <>
-      {draggable && (
-        <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 50 }}>
-          <button
-            onClick={handleCopyPositions}
-            style={{
-              background: '#06b6d4', color: '#000', padding: '6px 12px',
-              borderRadius: 4, fontWeight: 'bold', fontSize: 12, cursor: 'pointer', border: 'none'
-            }}
-          >
-            📋 Copiar Posições
-          </button>
-        </div>
-      )}
       {Object.entries(positions).map(([agentId, pos]) => {
         const mac = MAC_NAMES[agentId]
         if (!mac) return null
