@@ -21,7 +21,7 @@ export function EventFeed({ events }: EventFeedProps) {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      scrollRef.current.scrollTop = 0
     }
   }, [events.length])
 
