@@ -109,6 +109,34 @@ export function EventFeed({ events }: EventFeedProps) {
         </div>
       </div>
 
+      {/* Filter row: Aircraft */}
+      {aircraftIds.length > 0 && (
+        <div className="px-3 py-1.5 border-b border-white/5 flex items-center gap-1.5 flex-wrap">
+          {aircraftIds.map(acId => {
+            const isActive = activeAircraft.has(acId)
+            return (
+              <button
+                key={acId}
+                onClick={() => toggleAircraft(acId)}
+                className={`flex items-center gap-1 px-1.5 py-0.5 border transition-all ${
+                  isActive
+                    ? 'border-status-green/60 bg-status-green/15'
+                    : 'border-white/5 bg-transparent hover:border-white/15'
+                }`}
+              >
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 3L11 7L11 9L4 13L4 15L11 13L11 17L8 19L8 21L12 19.5L16 21L16 19L13 17L13 13L20 15L20 13L13 9L13 7L12 3Z"
+                    fill={isActive ? '#a3e635' : '#64748b'}
+                  />
+                </svg>
+                <span className="text-[8px] font-bold text-text-dim">{acId.replace('Gripen-', 'G')}</span>
+                <span className="text-[8px] text-text-dim">{aircraftCounts[acId] || 0}</span>
+              </button>
+            )
+          })}
+        </div>
+      )}
       {/* Filter row: Agent icons */}
       <div className="px-3 py-1.5 border-b border-white/5 flex items-center gap-1.5 flex-wrap">
         {AGENT_IDS.map(id => {
