@@ -8,6 +8,7 @@ const AC_STORAGE_KEY = 'aircraft-marker-positions'
 interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
   draggable?: boolean
+  onAircraftClick?: (ac: AircraftState, screenPos: { x: number; y: number }) => void
 }
 
 function loadSavedAc(): Record<string, [number, number]> {
