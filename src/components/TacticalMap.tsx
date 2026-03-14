@@ -158,10 +158,21 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
     ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
     : SATELLITE_STYLE
 
+  const [panelScreenPos, setPanelScreenPos] = useState<{ x: number; y: number } | null>(null)
+
   // Fly to target when event is clicked
   useEffect(() => {
     if (flyToTarget && mapRef.current) {
       mapRef.current.flyTo({ center: [flyToTarget.lng, flyToTarget.lat], zoom: 15, duration: 1200 })
+      // Project to screen after fly animation
+      setTimeout(() => {
+        if (mapRef.current) {
+          const pt = mapRef.current.project([flyToTarget.lng, flyToTarget.lat])
+          setPanelScreenPos({ x: pt.x + 20, y: pt.y - 40 })
+        }
+      }, 1300)
+    } else {
+      setPanelScreenPos(null)
     }
   }, [flyToTarget])
 
@@ -193,8 +204,8 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
       </Map>
 
       {/* Draggable event detail panel */}
-      {flyToTarget?.event && (
-        <DraggableEventPanel event={flyToTarget.event} onClose={() => onPopupClose?.()} />
+      {flyToTarget?.event && panelScreenPos && (
+        <DraggableEventPanel event={flyToTarget.event} onClose={() => { onPopupClose?.(); setPanelScreenPos(null) }} initialPos={panelScreenPos} />
       )}
 
       {/* Map style toggle */}
