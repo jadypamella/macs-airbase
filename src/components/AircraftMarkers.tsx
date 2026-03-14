@@ -212,7 +212,15 @@ export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick }
             draggable={draggable}
             onDragEnd={(e) => handleDragEnd(ac.id, e)}
           >
-            <div className="relative group cursor-pointer">
+            <div
+              className="relative group cursor-pointer"
+              onClick={(e) => {
+                if (onAircraftClick) {
+                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                  onAircraftClick(ac, { x: rect.left, y: rect.top - 120 })
+                }
+              }}
+            >
               {/* Aircraft icon */}
               <div
                 className="relative transition-transform duration-300"
