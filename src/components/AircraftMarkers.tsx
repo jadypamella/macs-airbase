@@ -154,9 +154,9 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
 
   const markers = useMemo(() => {
     if (!aircraft) return []
-    const entries = Object.values(aircraft)
+    // Only show ground-based aircraft
+    const entries = Object.values(aircraft).filter(ac => GROUND_PHASES.has(ac.phase))
 
-    // Count per-phase for slot allocation
     const phaseCounters: Record<string, number> = {}
 
     return entries.map((ac, globalIndex) => {
@@ -164,7 +164,7 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
       const slotIndex = phaseCounters[phase] || 0
       phaseCounters[phase] = slotIndex + 1
 
-      const position = getPhasePosition(phase, slotIndex, ac.heading, globalIndex, time)
+      const position = getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
       return { ...ac, position }
     })
   }, [aircraft, time])
