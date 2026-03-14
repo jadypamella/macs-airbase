@@ -8,21 +8,9 @@ interface AircraftMarkersProps {
 }
 
 // Positions along the takeoff runway centerline (west ↔ east)
-// Positions along the main runway centerline (SW → NE)
-const GROUND_POSITIONS: [number, number][] = [
-  [15.2450, 56.2635],
-  [15.2490, 56.2643],
-  [15.2530, 56.2651],
-  [15.2570, 56.2659],
-  [15.2610, 56.2667],
-  [15.2650, 56.2675],
-  [15.2690, 56.2683],
-  [15.2730, 56.2691],
-  [15.2770, 56.2699],
-  [15.2810, 56.2707],
-  [15.2850, 56.2715],
-  [15.2890, 56.2723],
-]
+// Linha de dispersão solicitada (SW → NE), ajustável por 2 pontos
+const RED_LINE_START: [number, number] = [15.2595, 56.2618]
+const RED_LINE_END: [number, number] = [15.2758, 56.2706]
 
 const PHASE_COLORS: Record<string, string> = {
   AIRBORNE: '#22d3ee',
