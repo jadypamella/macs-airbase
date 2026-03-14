@@ -97,8 +97,8 @@ export function Header({ scenario, threatLevel, connected, eventCount, criticalC
         className="ml-2 px-2 py-1 border border-white/10 hover:border-white/30 transition-colors flex items-center gap-1.5 bg-surface-card"
         title={lang === 'sv' ? 'Switch to English' : 'Byt till svenska'}
       >
-        <span className={`text-[10px] font-bold tracking-wider ${lang === 'sv' ? 'text-text-dim' : 'text-text-primary'}`}>SE</span>
         <span className={`text-[10px] font-bold tracking-wider ${lang === 'sv' ? 'text-text-primary' : 'text-text-dim'}`}>SV</span>
+        <span className={`text-[10px] font-bold tracking-wider ${lang === 'en' ? 'text-text-primary' : 'text-text-dim'}`}>EN</span>
       </button>
     </header>
   )
