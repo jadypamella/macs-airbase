@@ -16,9 +16,10 @@ import { AircraftMarkers } from './AircraftMarkers'
 import { MapBuildings3D } from './MapBuildings3D'
 import { ThreatHeatmap } from './ThreatHeatmap'
 import { DraggableEventPanel } from './DraggableEventPanel'
+import { DraggableAircraftPanel } from './DraggableAircraftPanel'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '../data/locations'
 import { detectCrossDomainRefs, MAC_NAMES, SEVERITY_COLORS } from '../constants'
-import type { AgentState, SwarmEvent, WorldState } from '../constants'
+import type { AgentState, SwarmEvent, WorldState, AircraftState } from '../constants'
 
 interface TacticalMapProps {
   events: SwarmEvent[]
@@ -45,6 +46,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
   const [dispersalActive, setDispersalActive] = useState(false)
   const [zoneStatuses, setZoneStatuses] = useState<Record<string, string>>({})
   const [editMode, setEditMode] = useState(false)
+  const [selectedAircraft, setSelectedAircraft] = useState<{ ac: AircraftState; pos: { x: number; y: number } } | null>(null)
   
   const mapRef = useRef<MapRef>(null)
   const processedRef = useRef<Set<string>>(new Set())
@@ -199,13 +201,22 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         <ThreatTracks tracks={threatTracks} />
         <RadarSweep ewJamming={ewJamming} />
         <ConnectionArcs arcs={arcs} />
-        <AircraftMarkers aircraft={worldState?.aircraft} draggable={editMode} />
+        <AircraftMarkers
+          aircraft={worldState?.aircraft}
+          draggable={editMode}
+          onAircraftClick={(ac, pos) => setSelectedAircraft({ ac, pos })}
+        />
 
       </Map>
 
       {/* Draggable event detail panel */}
       {flyToTarget?.event && panelScreenPos && (
         <DraggableEventPanel event={flyToTarget.event} onClose={() => { onPopupClose?.(); setPanelScreenPos(null) }} initialPos={panelScreenPos} />
+      )}
+
+      {/* Draggable aircraft detail panel */}
+      {selectedAircraft && (
+        <DraggableAircraftPanel ac={selectedAircraft.ac} initialPos={selectedAircraft.pos} onClose={() => setSelectedAircraft(null)} />
       )}
 
       {/* Map style toggle */}
