@@ -31,13 +31,13 @@ export function DraggableEventPanel({ event, onClose, initialPos }: Props) {
     window.addEventListener('pointerup', onUp)
   }, [pos.x, pos.y])
 
+  const [expanded, setExpanded] = useState(false)
   const message = event.payload?.message || event.event_type
-  const truncated = message.length > 120 ? message.slice(0, 120) + '…' : message
 
   return (
     <div
-      className="absolute z-40 font-mono select-none"
-      style={{ left: pos.x, top: pos.y, maxWidth: 240 }}
+      className="absolute z-40 font-mono select-none animate-fade-in"
+      style={{ left: pos.x, top: pos.y, width: expanded ? 320 : 240 }}
     >
       {/* Drag handle / header */}
       <div
@@ -69,18 +69,21 @@ export function DraggableEventPanel({ event, onClose, initialPos }: Props) {
         </button>
       </div>
 
-      {/* Body */}
+      {/* Body — click to expand */}
       <div
-        className="px-2 py-1.5"
+        className="px-2 py-1.5 cursor-pointer"
         style={{
           background: 'hsl(215 40% 8% / 0.96)',
           border: '1px solid hsl(220 14% 20% / 0.3)',
           borderTop: 'none',
           backdropFilter: 'blur(12px)',
+          maxHeight: expanded ? 300 : 'none',
+          overflowY: expanded ? 'auto' : 'hidden',
         }}
+        onClick={() => setExpanded(prev => !prev)}
       >
-        <p className="text-[9px] leading-[1.4] mb-1.5" style={{ color: 'hsl(var(--muted-foreground))' }}>
-          {truncated}
+        <p className="text-[9px] leading-[1.5] mb-1.5" style={{ color: 'hsl(var(--muted-foreground))' }}>
+          {expanded ? message : (message.length > 120 ? message.slice(0, 120) + '…' : message)}
         </p>
         <div className="flex gap-3 text-[8px]" style={{ color: 'hsl(var(--muted))' }}>
           <span>{event.event_type}</span>
