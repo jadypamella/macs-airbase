@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react'
+import { useMemo } from 'react'
 import { Marker } from 'react-map-gl/maplibre'
 import type { AircraftState, AircraftPhase } from '../constants'
 
