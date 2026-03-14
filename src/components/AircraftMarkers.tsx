@@ -7,44 +7,41 @@ interface AircraftMarkersProps {
   aircraft: Record<string, AircraftState> | undefined
 }
 
-/* ── Phase-based base positions on the map ── */
+/* ── Phase-based positions — all on the EAST side (apron/hangars area) ── */
 const SHELTER_POSITIONS: [number, number][] = [
-  [15.2530, 56.2710],
-  [15.2550, 56.2715],
-  [15.2570, 56.2720],
-  [15.2540, 56.2700],
-  [15.2560, 56.2705],
-  [15.2580, 56.2710],
+  [15.2720, 56.2700],
+  [15.2735, 56.2705],
+  [15.2750, 56.2700],
+  [15.2725, 56.2693],
+  [15.2740, 56.2693],
+  [15.2755, 56.2693],
 ]
 
-const FUEL_DEPOT = LOCATIONS['fuel-depot']
 const FUEL_POSITIONS: [number, number][] = [
-  [FUEL_DEPOT.lng - 0.002, FUEL_DEPOT.lat + 0.001],
-  [FUEL_DEPOT.lng,         FUEL_DEPOT.lat + 0.0015],
-  [FUEL_DEPOT.lng + 0.002, FUEL_DEPOT.lat + 0.001],
-  [FUEL_DEPOT.lng - 0.001, FUEL_DEPOT.lat - 0.001],
-  [FUEL_DEPOT.lng + 0.001, FUEL_DEPOT.lat - 0.001],
-  [FUEL_DEPOT.lng + 0.003, FUEL_DEPOT.lat - 0.0005],
+  [15.2700, 56.2680],
+  [15.2715, 56.2683],
+  [15.2710, 56.2675],
+  [15.2725, 56.2678],
+  [15.2695, 56.2685],
+  [15.2730, 56.2673],
 ]
 
-const ARMING_PAD = LOCATIONS['arming-pad']
 const ARMING_POSITIONS: [number, number][] = [
-  [ARMING_PAD.lng - 0.002, ARMING_PAD.lat + 0.001],
-  [ARMING_PAD.lng,         ARMING_PAD.lat + 0.0015],
-  [ARMING_PAD.lng + 0.002, ARMING_PAD.lat + 0.001],
-  [ARMING_PAD.lng - 0.001, ARMING_PAD.lat - 0.001],
-  [ARMING_PAD.lng + 0.001, ARMING_PAD.lat - 0.001],
-  [ARMING_PAD.lng + 0.003, ARMING_PAD.lat - 0.0005],
+  [15.2755, 56.2680],
+  [15.2770, 56.2683],
+  [15.2760, 56.2675],
+  [15.2775, 56.2678],
+  [15.2750, 56.2685],
+  [15.2780, 56.2673],
 ]
 
-const MAINT_HANGAR = LOCATIONS['hangar-alpha']
 const MAINT_POSITIONS: [number, number][] = [
-  [MAINT_HANGAR.lng - 0.001, MAINT_HANGAR.lat + 0.001],
-  [MAINT_HANGAR.lng + 0.001, MAINT_HANGAR.lat + 0.001],
-  [MAINT_HANGAR.lng,         MAINT_HANGAR.lat - 0.001],
-  [MAINT_HANGAR.lng - 0.002, MAINT_HANGAR.lat],
-  [MAINT_HANGAR.lng + 0.002, MAINT_HANGAR.lat],
-  [MAINT_HANGAR.lng,         MAINT_HANGAR.lat + 0.002],
+  [15.2710, 56.2710],
+  [15.2725, 56.2713],
+  [15.2715, 56.2718],
+  [15.2730, 56.2718],
+  [15.2705, 56.2715],
+  [15.2740, 56.2715],
 ]
 
 // Runway centerline for TAXI / TAKEOFF / LANDING
