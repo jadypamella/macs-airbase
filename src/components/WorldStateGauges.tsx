@@ -1,7 +1,8 @@
 import {
-  PaperAirplaneIcon, BeakerIcon, BoltIcon,
+  BoltIcon,
   WrenchScrewdriverIcon, ShieldExclamationIcon, SignalIcon
 } from '@heroicons/react/24/solid'
+import { Fuel, Gauge } from 'lucide-react'
 import { useLang } from '@/hooks/useLang'
 import type { WorldState } from '../constants'
 
@@ -9,8 +10,31 @@ interface WorldStateGaugesProps {
   worldState: WorldState | null
 }
 
+// Reusable jet SVG icon component matching the map aircraft markers
+function JetIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 3L11 7L11 9L4 13L4 15L11 13L11 17L8 19L8 21L12 19.5L16 21L16 19L13 17L13 13L20 15L20 13L13 9L13 7L12 3Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+// Wrapper to make lucide icons compatible with the gauge interface
+function FuelIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  const color = style?.color as string | undefined
+  return <Fuel className={className} style={style} color={color} size={16} />
+}
+
+function ReadinessIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  const color = style?.color as string | undefined
+  return <Gauge className={className} style={style} color={color} size={16} />
+}
+
 interface GaugeDef {
-  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+  Icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   labelSv: string
   labelEn: string
   getValue: (ws: WorldState) => string
@@ -20,19 +44,19 @@ interface GaugeDef {
 
 const GAUGES: GaugeDef[] = [
   {
-    Icon: PaperAirplaneIcon, labelSv: 'BEREDSKAP', labelEn: 'READINESS',
+    Icon: ReadinessIcon, labelSv: 'BEREDSKAP', labelEn: 'READINESS',
     getValue: ws => `${ws.sorties?.readiness_pct ?? '--'}%`,
     getColor: ws => { const v = ws.sorties?.readiness_pct ?? 100; return v < 40 ? '#ef4444' : v < 60 ? '#f59e0b' : '#22c55e' },
     getPct: ws => ws.sorties?.readiness_pct ?? 0,
   },
   {
-    Icon: PaperAirplaneIcon, labelSv: 'FLYGPLAN', labelEn: 'AIRCRAFT',
+    Icon: JetIcon, labelSv: 'FLYGPLAN', labelEn: 'AIRCRAFT',
     getValue: ws => `${ws.sorties?.aircraft_serviceable ?? '-'}/${ws.sorties?.aircraft_total ?? '-'}`,
     getColor: ws => { const v = ws.sorties?.aircraft_serviceable ?? 6; return v < 2 ? '#ef4444' : v < 4 ? '#f59e0b' : '#22c55e' },
     getPct: ws => ((ws.sorties?.aircraft_serviceable ?? 0) / (ws.sorties?.aircraft_total || 6)) * 100,
   },
   {
-    Icon: BeakerIcon, labelSv: 'JP-8 BRÄNSLE', labelEn: 'JP-8 FUEL',
+    Icon: FuelIcon, labelSv: 'JP-8 BRÄNSLE', labelEn: 'JP-8 FUEL',
     getValue: ws => `${ws.fuel?.level_pct ?? '--'}%`,
     getColor: ws => { const v = ws.fuel?.level_pct ?? 100; return v < 20 ? '#ef4444' : v < 40 ? '#f59e0b' : '#22c55e' },
     getPct: ws => ws.fuel?.level_pct ?? 0,
