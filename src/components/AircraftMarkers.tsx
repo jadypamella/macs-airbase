@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { Marker } from 'react-map-gl/maplibre'
 import type { AircraftState, AircraftPhase } from '../constants'
 
@@ -148,24 +148,26 @@ function getPhasePosition(
 const GROUND_PHASES = new Set(['SHELTER', 'POST_FLIGHT', 'FUELING', 'ARMING', 'MAINTENANCE', 'GROUNDED', 'PRE_FLIGHT', 'TAXI', 'TAKEOFF', 'LANDING'])
 
 export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
+  const [overrides, setOverrides] = useState<Record<string, [number, number]>>({})
 
   const markers = useMemo(() => {
     if (!aircraft) return []
-    // Only show ground-based aircraft
     const entries = Object.values(aircraft).filter(ac => GROUND_PHASES.has(ac.phase))
-
     const phaseCounters: Record<string, number> = {}
-
     return entries.map((ac, globalIndex) => {
       const phase = ac.phase
       const slotIndex = phaseCounters[phase] || 0
       phaseCounters[phase] = slotIndex + 1
-
-      const position = getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
+      const position = overrides[ac.id] || getPhasePosition(phase, slotIndex, ac.heading, globalIndex, 0)
       return { ...ac, position }
     })
-  }, [aircraft])
+  }, [aircraft, overrides])
 
+  const handleDragEnd = useCallback((id: string, e: any) => {
+    const { lng, lat } = e.lngLat
+    setOverrides(prev => ({ ...prev, [id]: [lng, lat] }))
+    console.log(`AIRCRAFT_POSITION ${id}: [${lng.toFixed(6)}, ${lat.toFixed(6)}]  // lng, lat`)
+  }, [])
 
   return (
     <>
@@ -176,8 +178,15 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
         const rotation = ac.heading || 0
 
         return (
-          <Marker key={ac.id} latitude={lat} longitude={lng} anchor="center">
-            <div className="relative group cursor-pointer">
+          <Marker
+            key={ac.id}
+            latitude={lat}
+            longitude={lng}
+            anchor="center"
+            draggable
+            onDragEnd={(e) => handleDragEnd(ac.id, e)}
+          >
+            <div className="relative group cursor-grab active:cursor-grabbing">
               {/* Aircraft icon */}
               <div
                 className="relative transition-transform duration-300"
