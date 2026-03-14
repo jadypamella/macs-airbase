@@ -10,12 +10,21 @@ import { TimelineBar } from '@/components/TimelineBar'
 import { ScrambleOverlay } from '@/components/ScrambleOverlay'
 import { EmergenceGraph } from '@/components/EmergenceGraph'
 import { EVENT_LOCATION_MAP, LOCATIONS } from '@/data/locations'
+import { MAC_NAMES, SEVERITY_COLORS } from '@/constants'
 import type { SwarmEvent } from '@/constants'
+
+const AGENT_LOC_MAP: Record<string, string> = {
+  OPS: 'ops-center',
+  FUEL: 'fuel-depot',
+  ARMING: 'arming-pad',
+  MAINT: 'hangar-alpha',
+  THREAT: 'radar-tower',
+}
 
 const Index = () => {
   const { events, agents, connected, scenario, worldState, threatLevel } = useSwarm()
   const [scrambleActive, setScrambleActive] = useState(false)
-  const [flyToTarget, setFlyToTarget] = useState<{ lng: number; lat: number } | null>(null)
+  const [flyToTarget, setFlyToTarget] = useState<{ lng: number; lat: number; event: SwarmEvent } | null>(null)
 
   useEffect(() => {
     const lastScramble = events.filter(e => e.event_type === 'SCRAMBLE_ORDER').at(-1)
@@ -29,25 +38,14 @@ const Index = () => {
   const criticalCount = events.filter(e => e.severity === 'CRITICAL').length
 
   const handleEventClick = useCallback((event: SwarmEvent) => {
-    // Try event_type location first
     const locKey = EVENT_LOCATION_MAP[event.event_type]
-    if (locKey && LOCATIONS[locKey]) {
-      const loc = LOCATIONS[locKey]
-      setFlyToTarget({ lng: loc.lng, lat: loc.lat })
-      return
+    let loc = locKey ? LOCATIONS[locKey] : null
+    if (!loc) {
+      const agentLoc = AGENT_LOC_MAP[event.source]
+      loc = agentLoc ? LOCATIONS[agentLoc] : null
     }
-    // Try source agent location
-    const agentLocMap: Record<string, string> = {
-      OPS: 'ops-center',
-      FUEL: 'fuel-depot',
-      ARMING: 'arming-pad',
-      MAINT: 'hangar-alpha',
-      THREAT: 'radar-tower',
-    }
-    const agentLoc = agentLocMap[event.source]
-    if (agentLoc && LOCATIONS[agentLoc]) {
-      const loc = LOCATIONS[agentLoc]
-      setFlyToTarget({ lng: loc.lng, lat: loc.lat })
+    if (loc) {
+      setFlyToTarget({ lng: loc.lng, lat: loc.lat, event })
     }
   }, [])
 
@@ -66,7 +64,13 @@ const Index = () => {
           <MacSidebar agents={agents} events={events} />
 
           <div className="flex-1 flex flex-col min-w-0">
-            <TacticalMap events={events} agents={agents} worldState={worldState} flyToTarget={flyToTarget} />
+            <TacticalMap
+              events={events}
+              agents={agents}
+              worldState={worldState}
+              flyToTarget={flyToTarget}
+              onPopupClose={() => setFlyToTarget(null)}
+            />
             <WorldStateGauges worldState={worldState} />
           </div>
 
