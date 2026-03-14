@@ -1,10 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLang } from '@/hooks/useLang'
 
 interface ScrambleOverlayProps {
   active: boolean
 }
 
 export function ScrambleOverlay({ active }: ScrambleOverlayProps) {
+  const { lang } = useLang()
+
   return (
     <AnimatePresence>
       {active && (
@@ -22,7 +25,7 @@ export function ScrambleOverlay({ active }: ScrambleOverlayProps) {
             className="text-center"
           >
             <div className="text-6xl font-bold tracking-[0.3em] text-status-red drop-shadow-2xl">
-              BEREDSKAPSSTART
+              {lang === 'sv' ? 'BEREDSKAPSSTART' : 'SCRAMBLE'}
             </div>
             <div className="text-3xl font-bold tracking-[0.5em] text-text-primary mt-4">
               SCRAMBLE SCRAMBLE SCRAMBLE

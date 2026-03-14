@@ -1,15 +1,24 @@
 import { GlobeAltIcon } from '@heroicons/react/24/solid'
 import { MAC_NAMES, SEVERITY_COLORS, SEVERITY_LABELS_SV } from '../constants'
+import { useLang } from '@/hooks/useLang'
 import type { SwarmEvent } from '../constants'
+
+const SEVERITY_LABELS_EN: Record<string, string> = {
+  CRITICAL: 'CRITICAL', HIGH: 'HIGH', AMBER: 'AMBER',
+  MEDIUM: 'MEDIUM', LOW: 'LOW', INFO: 'INFO',
+}
 
 interface EventRowProps {
   event: SwarmEvent
 }
 
 export function EventRow({ event }: EventRowProps) {
+  const { lang } = useLang()
   const mac = MAC_NAMES[event.source]
   const severityColor = SEVERITY_COLORS[event.severity] || '#4b5563'
-  const severitySv = SEVERITY_LABELS_SV[event.severity] || event.severity
+  const severityLabel = lang === 'sv'
+    ? (SEVERITY_LABELS_SV[event.severity] || event.severity)
+    : (SEVERITY_LABELS_EN[event.severity] || event.severity)
   const time = new Date(event.timestamp * 1000).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 
   const rowBg = event.severity === 'CRITICAL' ? 'bg-status-red/5'
@@ -27,14 +36,14 @@ export function EventRow({ event }: EventRowProps) {
             <GlobeAltIcon className="w-3.5 h-3.5 text-system" />
           )}
           <span className="text-[10px] font-bold tracking-wider" style={{ color: mac?.color || '#64748b' }}>
-            {mac?.nameSv || 'SYSTEM'}
+            {mac ? (lang === 'sv' ? mac.nameSv : mac.name) : 'SYSTEM'}
           </span>
         </div>
         <span
           className="text-[8px] font-bold tracking-wider px-1 py-0.5 ml-auto"
           style={{ color: severityColor, backgroundColor: `${severityColor}15` }}
         >
-          {severitySv}
+          {severityLabel}
         </span>
       </div>
       <p className="text-[10px] text-text-muted leading-tight truncate">
