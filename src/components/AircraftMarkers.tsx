@@ -169,11 +169,6 @@ export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
     })
   }, [aircraft])
 
-  // Check if any aircraft is airborne (for orbit animation)
-  const hasAirborne = useMemo(() => {
-    if (!aircraft) return false
-    return Object.values(aircraft).some(ac => ac.phase === 'AIRBORNE' || ac.phase === 'RTB')
-  }, [aircraft])
 
   return (
     <>
