@@ -10,6 +10,7 @@ const SEVERITY_LABELS_EN: Record<string, string> = {
 
 interface EventRowProps {
   event: SwarmEvent
+  onClick?: (event: SwarmEvent) => void
 }
 
 export function EventRow({ event }: EventRowProps) {
