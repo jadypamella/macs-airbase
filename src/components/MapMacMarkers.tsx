@@ -5,17 +5,60 @@ import { MAC_POSITIONS } from '../data/locations'
 import type { AgentState } from '../constants'
 
 const STORAGE_KEY = 'mac-marker-positions'
+const LON_MIN = 15.1
+const LON_MAX = 15.55
+const LAT_MIN = 56.15
+const LAT_MAX = 56.42
 
 interface MapMacMarkersProps {
   agents: Record<string, AgentState>
   draggable?: boolean
 }
 
+function toValidPosition(value: unknown): { lng: number; lat: number } | null {
+  if (Array.isArray(value) && value.length >= 2) {
+    const lng = Number(value[0])
+    const lat = Number(value[1])
+    if (Number.isFinite(lng) && Number.isFinite(lat) && lng >= LON_MIN && lng <= LON_MAX && lat >= LAT_MIN && lat <= LAT_MAX) {
+      return { lng, lat }
+    }
+    return null
+  }
+
+  if (value && typeof value === 'object') {
+    const obj = value as Record<string, unknown>
+    const lng = Number(obj.lng ?? obj.x)
+    const lat = Number(obj.lat ?? obj.y)
+    if (Number.isFinite(lng) && Number.isFinite(lat) && lng >= LON_MIN && lng <= LON_MAX && lat >= LAT_MIN && lat <= LAT_MAX) {
+      return { lng, lat }
+    }
+  }
+
+  return null
+}
+
 function loadSaved(): Record<string, { lng: number; lat: number }> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : {}
-  } catch { return {} }
+    if (!raw) return {}
+
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return {}
+
+    const normalized: Record<string, { lng: number; lat: number }> = {}
+    Object.entries(parsed as Record<string, unknown>).forEach(([id, pos]) => {
+      const valid = toValidPosition(pos)
+      if (valid) normalized[id] = valid
+    })
+
+    if (Object.keys(normalized).length !== Object.keys(parsed as Record<string, unknown>).length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
+    }
+
+    return normalized
+  } catch {
+    return {}
+  }
 }
 
 export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps) {
@@ -29,12 +72,13 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
   })
 
   const handleDragEnd = useCallback((agentId: string, e: any) => {
-    const { lng, lat } = e.lngLat
+    const validPos = toValidPosition({ lng: e?.lngLat?.lng, lat: e?.lngLat?.lat })
+    if (!validPos) return
+
     setPositions(prev => {
-      const next = { ...prev, [agentId]: { lng, lat } }
-      // Save immediately to localStorage
+      const next = { ...prev, [agentId]: validPos }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-      console.log(`MAC_POSITION ${agentId}: { lng: ${lng.toFixed(6)}, lat: ${lat.toFixed(6)} }`)
+      console.log(`MAC_POSITION ${agentId}: { lng: ${validPos.lng.toFixed(6)}, lat: ${validPos.lat.toFixed(6)} }`)
       return next
     })
   }, [])
