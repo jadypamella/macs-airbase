@@ -2,7 +2,7 @@ import { Source, Layer } from 'react-map-gl/maplibre'
 import { Marker } from 'react-map-gl/maplibre'
 import { DISPERSAL_ROUTE_BRAVO, DISPERSAL_ROUTE_CHARLIE } from '../data/routes'
 import { LOCATIONS } from '../data/locations'
-import type { LinePaint } from 'maplibre-gl'
+
 
 interface DispersalRoutesProps {
   active: boolean
