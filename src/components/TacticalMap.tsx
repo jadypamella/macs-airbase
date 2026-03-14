@@ -45,6 +45,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
   const [dispersalActive, setDispersalActive] = useState(false)
   const [zoneStatuses, setZoneStatuses] = useState<Record<string, string>>({})
   const [editMode, setEditMode] = useState(false)
+  const [selectedAircraft, setSelectedAircraft] = useState<{ ac: AircraftState; pos: { x: number; y: number } } | null>(null)
   
   const mapRef = useRef<MapRef>(null)
   const processedRef = useRef<Set<string>>(new Set())
