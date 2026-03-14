@@ -169,6 +169,7 @@ export function TacticalMap({ events, agents, worldState }: TacticalMapProps) {
         <ThreatTracks tracks={threatTracks} />
         <RadarSweep ewJamming={ewJamming} />
         <ConnectionArcs arcs={arcs} />
+        <AircraftMarkers aircraft={worldState?.aircraft} />
       </Map>
 
       {/* Map style toggle */}

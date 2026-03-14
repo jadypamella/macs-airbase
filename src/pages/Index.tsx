@@ -40,7 +40,7 @@ const Index = () => {
           <MacSidebar agents={agents} events={events} />
 
           <div className="flex-1 flex flex-col min-w-0">
-            <TacticalMap events={events} agents={agents} />
+            <TacticalMap events={events} agents={agents} worldState={worldState} />
             <WorldStateGauges worldState={worldState} />
           </div>
 

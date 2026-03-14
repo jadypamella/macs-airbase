@@ -116,6 +116,26 @@ export interface AgentState {
   actionCount: number
 }
 
+export type AircraftPhase =
+  | 'SHELTER' | 'PRE_FLIGHT' | 'FUELING' | 'ARMING'
+  | 'TAXI' | 'TAKEOFF' | 'AIRBORNE' | 'RTB'
+  | 'LANDING' | 'POST_FLIGHT' | 'MAINTENANCE' | 'GROUNDED'
+
+export interface AircraftState {
+  id: string
+  phase: AircraftPhase
+  pad: string
+  fuel_pct: number
+  loadout: string
+  pilot: string
+  serviceable: boolean
+  heading: number
+  altitude_ft: number
+  speed_kts: number
+  flight_time_min: number
+  hours_since_inspection: number
+}
+
 export interface WorldState {
   scenario?: string
   updated_at?: number
@@ -125,4 +145,5 @@ export interface WorldState {
   maintenance?: { queue: number; grounded: number }
   threat?: { level: string; radar_tracks: number; ew_jamming: boolean; comms_coverage_pct: number }
   base?: { bases_active: number; dispersal_active: boolean }
+  aircraft?: Record<string, AircraftState>
 }
