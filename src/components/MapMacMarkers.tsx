@@ -50,12 +50,7 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
     const validPos = toValidPosition({ lng: e?.lngLat?.lng, lat: e?.lngLat?.lat })
     if (!validPos) return
 
-    setPositions(prev => {
-      const next = { ...prev, [agentId]: validPos }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-      console.log(`MAC_POSITION ${agentId}: { lng: ${validPos.lng.toFixed(6)}, lat: ${validPos.lat.toFixed(6)} }`)
-      return next
-    })
+    setPositions(prev => ({ ...prev, [agentId]: validPos }))
   }, [])
 
   return (
