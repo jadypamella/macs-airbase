@@ -153,9 +153,18 @@ export function TacticalMap({ events, agents, worldState, flyToTarget }: Tactica
     ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
     : SATELLITE_STYLE
 
+  // Fly to target when event is clicked
+  const { current: mapInstance } = useMap()
+  useEffect(() => {
+    if (flyToTarget && mapInstance) {
+      mapInstance.flyTo({ center: [flyToTarget.lng, flyToTarget.lat], zoom: 15, duration: 1200 })
+    }
+  }, [flyToTarget, mapInstance])
+
   return (
     <div className="relative flex-1 overflow-hidden">
       <Map
+        id="current"
         initialViewState={{
           longitude: 15.265,
           latitude: 56.267,
