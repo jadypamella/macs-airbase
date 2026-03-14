@@ -227,7 +227,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
               : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
           }`}
         >
-          {editMode ? '🔓 EDIT' : '🔒 EDIT'}
+          EDIT
         </button>
       </div>
 
