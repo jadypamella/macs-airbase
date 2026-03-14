@@ -1,5 +1,4 @@
 import { Source, Layer } from 'react-map-gl/maplibre'
-import type { FillPaint, LinePaint } from 'maplibre-gl'
 import baseZonesData from '../data/base-zones.json'
 
 interface MapZonesProps {
