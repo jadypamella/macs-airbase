@@ -12,6 +12,7 @@ const LAT_MAX = 56.42
 interface MapMacMarkersProps {
   agents: Record<string, AgentState>
   draggable?: boolean
+  onAgentClick?: (agentId: string, screenPos: { x: number; y: number }) => void
 }
 
 function toValidPosition(value: unknown): { lng: number; lat: number } | null {
