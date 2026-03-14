@@ -18,6 +18,7 @@ export function EventFeed({ events }: EventFeedProps) {
   const [search, setSearch] = useState('')
   const [activeSeverities, setActiveSeverities] = useState<Set<string>>(new Set())
   const [activeAgents, setActiveAgents] = useState<Set<string>>(new Set())
+  const [activeAircraft, setActiveAircraft] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -43,9 +44,45 @@ export function EventFeed({ events }: EventFeedProps) {
     })
   }
 
+  const toggleAircraft = (id: string) => {
+    setActiveAircraft(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  // Extract aircraft IDs mentioned in events
+  const aircraftIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const e of events) {
+      const msg = e.payload?.message || ''
+      const matches = msg.match(/Gripen-\d+/gi)
+      if (matches) matches.forEach((m: string) => ids.add(m))
+    }
+    return Array.from(ids).sort()
+  }, [events])
+
+  // Count events per aircraft
+  const aircraftCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const e of events) {
+      const msg = e.payload?.message || ''
+      const matches = msg.match(/Gripen-\d+/gi)
+      if (matches) matches.forEach((m: string) => { counts[m] = (counts[m] || 0) + 1 })
+    }
+    return counts
+  }, [events])
+
   const filtered = events.filter(e => {
     if (activeSeverities.size > 0 && !activeSeverities.has(e.severity)) return false
     if (activeAgents.size > 0 && !activeAgents.has(e.source) && e.source !== 'SYSTEM') return false
+    if (activeAircraft.size > 0) {
+      const msg = e.payload?.message || ''
+      const mentions = msg.match(/Gripen-\d+/gi) || []
+      if (!mentions.some((m: string) => activeAircraft.has(m))) return false
+    }
     if (search) {
       const q = search.toLowerCase()
       const msg = (e.payload?.message || '').toLowerCase()
