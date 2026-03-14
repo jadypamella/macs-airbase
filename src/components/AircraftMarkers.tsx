@@ -39,15 +39,21 @@ const PHASE_COLORS: Record<string, string> = {
   GROUNDED: '#ef4444',
 }
 
-function getAircraftPosition(ac: AircraftState, index: number): [number, number] {
+// Runway endpoints (SW → NE)
+const RUNWAY_START: [number, number] = [15.2450, 56.2635]
+const RUNWAY_END: [number, number] = [15.2890, 56.2723]
+
+function getAircraftPosition(ac: AircraftState, index: number, total: number): [number, number] {
   if (ac.phase === 'AIRBORNE' || ac.phase === 'RTB') {
-    // Use heading to place airborne aircraft around the base
     const rad = (ac.heading * Math.PI) / 180
     const dist = 0.02 + (index * 0.008)
     return [15.265 + Math.sin(rad) * dist, 56.267 + Math.cos(rad) * dist * 0.6]
   }
-  // Ground aircraft along the dispersal roads
-  return GROUND_POSITIONS[index % GROUND_POSITIONS.length]
+  // Distribute evenly along the full runway
+  const t = total > 1 ? index / (total - 1) : 0.5
+  const lng = RUNWAY_START[0] + (RUNWAY_END[0] - RUNWAY_START[0]) * t
+  const lat = RUNWAY_START[1] + (RUNWAY_END[1] - RUNWAY_START[1]) * t
+  return [lng, lat]
 }
 
 export function AircraftMarkers({ aircraft }: AircraftMarkersProps) {
