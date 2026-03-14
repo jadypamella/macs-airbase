@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import Map from 'react-map-gl/maplibre'
 import { MapZones } from './MapZones'
@@ -118,6 +118,35 @@ export function TacticalMap({ events, agents }: TacticalMapProps) {
     events.forEach(processNewEvent)
   }, [events, processNewEvent])
 
+  const SATELLITE_STYLE = useMemo(() => ({
+    version: 8 as const,
+    sources: {
+      'esri-satellite': {
+        type: 'raster' as const,
+        tiles: [
+          'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        ],
+        tileSize: 256,
+        attribution: '© Esri',
+      },
+    },
+    layers: [
+      {
+        id: 'esri-satellite-layer',
+        type: 'raster' as const,
+        source: 'esri-satellite',
+        minzoom: 0,
+        maxzoom: 19,
+      },
+    ],
+  }), [])
+
+  const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('dark')
+
+  const activeStyle = mapStyle === 'dark'
+    ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
+    : SATELLITE_STYLE
+
   return (
     <div className="relative flex-1 overflow-hidden">
       <Map
@@ -129,7 +158,7 @@ export function TacticalMap({ events, agents }: TacticalMapProps) {
           bearing: -10,
         }}
         style={{ width: '100%', height: '100%' }}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        mapStyle={activeStyle as any}
       >
         <MapZones zoneStatuses={zoneStatuses} />
         <DispersalRoutes active={dispersalActive} />
@@ -139,6 +168,30 @@ export function TacticalMap({ events, agents }: TacticalMapProps) {
         <RadarSweep ewJamming={ewJamming} />
         <ConnectionArcs arcs={arcs} />
       </Map>
+
+      {/* Map style toggle */}
+      <div className="absolute top-4 left-4 z-30 flex gap-1">
+        <button
+          onClick={() => setMapStyle('dark')}
+          className={`px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors ${
+            mapStyle === 'dark'
+              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
+              : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
+          }`}
+        >
+          TAKTISK
+        </button>
+        <button
+          onClick={() => setMapStyle('satellite')}
+          className={`px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors ${
+            mapStyle === 'satellite'
+              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
+              : 'bg-surface-card/80 border-white/10 text-text-muted hover:border-white/30'
+          }`}
+        >
+          SATELLIT
+        </button>
+      </div>
 
       {/* Scanline overlay */}
       <div
