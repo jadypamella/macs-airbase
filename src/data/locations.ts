@@ -19,10 +19,10 @@ export const LOCATIONS: Record<string, Location> = {
 }
 
 export const MAC_POSITIONS: Record<string, Location> = {
-  OPS:    { lat: 56.268377, lng: 15.272857, label: 'Operationscentral / Ops Center', type: 'ops' },
-  FUEL:   { lat: 56.264227, lng: 15.273499, label: 'Bränsleförråd / Fuel Depot', type: 'fuel' },
-  ARMING: { lat: 56.266431, lng: 15.273033, label: 'Beväpningsplats / Arming Pad', type: 'arming' },
-  MAINT:  { lat: 56.264638, lng: 15.270250, label: 'Hangar Alpha / Maintenance', type: 'maintenance' },
+  OPS:    { lat: 56.267694, lng: 15.272945, label: 'Operationscentral / Ops Center', type: 'ops' },
+  FUEL:   { lat: 56.264019, lng: 15.272587, label: 'Bränsleförråd / Fuel Depot', type: 'fuel' },
+  ARMING: { lat: 56.263601, lng: 15.275894, label: 'Beväpningsplats / Arming Pad', type: 'arming' },
+  MAINT:  { lat: 56.264909, lng: 15.271961, label: 'Hangar Alpha / Maintenance', type: 'maintenance' },
   THREAT: { lat: 56.272000, lng: 15.268000, label: 'Radartorn / Radar Tower', type: 'radar' },
 }
 
