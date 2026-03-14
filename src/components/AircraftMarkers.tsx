@@ -172,7 +172,7 @@ function getPhasePosition(
   }
 }
 
-const GROUND_PHASES = new Set(['SHELTER', 'POST_FLIGHT', 'FUELING', 'ARMING', 'MAINTENANCE', 'GROUNDED', 'PRE_FLIGHT', 'TAXI', 'TAKEOFF', 'LANDING'])
+const GROUND_PHASES = new Set(['SHELTER', 'POST_FLIGHT', 'FUELING', 'ARMING', 'MAINTENANCE', 'GROUNDED', 'PRE_FLIGHT', 'TAXI', 'TAKEOFF', 'LANDING', 'AIRBORNE', 'RTB'])
 
 /* Fixed position overrides set by user */
 const POSITION_OVERRIDES: Record<string, [number, number]> = {
