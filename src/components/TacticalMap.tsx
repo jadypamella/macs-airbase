@@ -149,6 +149,14 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
     }
   }, [flyToTarget])
 
+  const latestAgentEvents = useMemo(() => {
+    const latest: Record<string, SwarmEvent | undefined> = {}
+    for (const event of events) {
+      if (MAC_NAMES[event.source]) latest[event.source] = event
+    }
+    return latest
+  }, [events])
+
   const handleAircraftClick = useCallback((ac: AircraftState, screenPos: { x: number; y: number }) => {
     setActivePanel({
       type: 'aircraft',
@@ -156,6 +164,16 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
       pos: screenPos,
     })
   }, [])
+
+  const handleAgentClick = useCallback((agentId: string, screenPos: { x: number; y: number }) => {
+    const latest = latestAgentEvents[agentId]
+    if (!latest) return
+    setActivePanel({
+      type: 'event',
+      event: latest,
+      pos: screenPos,
+    })
+  }, [latestAgentEvents])
 
   const closePanel = useCallback(() => {
     setActivePanel(null)
@@ -206,7 +224,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         <MapBuildings3D visible={true} />
         <ThreatHeatmap events={events} />
         <DispersalRoutes active={dispersalActive} />
-        <MapMacMarkers agents={agents} draggable={editMode} />
+        <MapMacMarkers agents={agents} draggable={editMode} onAgentClick={handleAgentClick} />
         <MapPulse pulseRings={pulseRings} />
         <ThreatTracks tracks={threatTracks} />
         <RadarSweep ewJamming={ewJamming} />

@@ -12,6 +12,7 @@ const LAT_MAX = 56.42
 interface MapMacMarkersProps {
   agents: Record<string, AgentState>
   draggable?: boolean
+  onAgentClick?: (agentId: string, screenPos: { x: number; y: number }) => void
 }
 
 function toValidPosition(value: unknown): { lng: number; lat: number } | null {
@@ -26,7 +27,7 @@ function toValidPosition(value: unknown): { lng: number; lat: number } | null {
   return null
 }
 
-export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps) {
+export function MapMacMarkers({ agents, draggable = false, onAgentClick }: MapMacMarkersProps) {
   const [positions, setPositions] = useState<Record<string, { lng: number; lat: number }>>(() => {
     const init: Record<string, { lng: number; lat: number }> = {}
     Object.entries(MAC_POSITIONS).forEach(([id, pos]) => {
@@ -75,7 +76,20 @@ export function MapMacMarkers({ agents, draggable = false }: MapMacMarkersProps)
             draggable={draggable}
             onDragEnd={(e) => handleDragEnd(agentId, e)}
           >
-            <div className={`relative ${isOffline ? 'animate-agent-death' : ''}`}>
+            <div
+              className={`relative ${isOffline ? 'animate-agent-death' : ''} ${draggable ? '' : 'cursor-pointer'}`}
+              onClick={(clickEvt) => {
+                if (!onAgentClick || draggable) return
+                const el = clickEvt.currentTarget as HTMLElement
+                const rect = el.getBoundingClientRect()
+                const mapEl = document.querySelector('.relative.flex-1.overflow-hidden')
+                const mapRect = mapEl ? mapEl.getBoundingClientRect() : { left: 0, top: 0 }
+                onAgentClick(agentId, {
+                  x: rect.left - mapRect.left + rect.width / 2 - 120,
+                  y: rect.top - mapRect.top - 150,
+                })
+              }}
+            >
               <div
                 className={`w-8 h-8 flex items-center justify-center rounded-sm ${draggable ? 'cursor-grab active:cursor-grabbing ring-1 ring-amber-400/50' : ''}`}
                 style={{
