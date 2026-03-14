@@ -272,7 +272,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
             onClick={handleCopyAllPositions}
             className="px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors bg-cyan-500/20 border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30"
           >
-            📋 COPY
+            COPY
           </button>
         )}
       </div>

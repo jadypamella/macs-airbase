@@ -31,7 +31,7 @@ function extractAircraftId(event: SwarmEvent): string | null {
 }
 
 const Index = () => {
-  const { events, agents, connected, scenario, worldState, threatLevel, sendCommand } = useSwarm()
+  const { events, agents, connected, scenario, worldState, threatLevel, controlAgent } = useSwarm()
   const [scrambleActive, setScrambleActive] = useState(false)
   const [flyToTarget, setFlyToTarget] = useState<{ lng: number; lat: number; event: SwarmEvent } | null>(null)
 
@@ -91,12 +91,12 @@ const Index = () => {
   }, [])
 
   const handleKill = useCallback((agentId: string) => {
-    sendCommand({ type: 'kill', agent: agentId })
-  }, [sendCommand])
+    controlAgent('kill_agent', agentId)
+  }, [controlAgent])
 
   const handleRevive = useCallback((agentId: string) => {
-    sendCommand({ type: 'revive', agent: agentId })
-  }, [sendCommand])
+    controlAgent('revive_agent', agentId)
+  }, [controlAgent])
 
   return (
     <LangProvider>
