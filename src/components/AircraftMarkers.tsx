@@ -213,10 +213,16 @@ export function AircraftMarkers({ aircraft, draggable = false, onAircraftClick }
           >
             <div
               className="relative group cursor-pointer"
-              onClick={(e) => {
+              onClick={(clickEvt) => {
                 if (onAircraftClick) {
-                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-                  onAircraftClick(ac, { x: rect.left, y: rect.top - 120 })
+                  const el = clickEvt.currentTarget as HTMLElement
+                  const rect = el.getBoundingClientRect()
+                  const mapEl = document.querySelector('.relative.flex-1.overflow-hidden')
+                  const mapRect = mapEl ? mapEl.getBoundingClientRect() : { left: 0, top: 0 }
+                  onAircraftClick(ac, {
+                    x: rect.left - mapRect.left + rect.width / 2 - 110,
+                    y: rect.top - mapRect.top - 100,
+                  })
                 }
               }}
             >
