@@ -31,14 +31,13 @@ const Index = () => {
   const criticalCount = events.filter(e => e.severity === 'CRITICAL').length
 
   const handleEventClick = useCallback((event: SwarmEvent) => {
-    // Always fly to the MAC agent position for the event source
-    const macPos = MAC_POSITIONS[event.source]
-    const target = macPos
-      ? { lng: macPos.lng, lat: macPos.lat }
-      : null
+    // Toggle expand in list — collapse if same event clicked again
+    setExpandedEventId(prev => prev === event.id ? null : event.id)
 
-    if (target) {
-      setFlyToTarget({ lng: target.lng, lat: target.lat, event })
+    // Fly to MAC agent position if available
+    const macPos = MAC_POSITIONS[event.source]
+    if (macPos) {
+      setFlyToTarget({ lng: macPos.lng, lat: macPos.lat, event })
     }
   }, [])
 
