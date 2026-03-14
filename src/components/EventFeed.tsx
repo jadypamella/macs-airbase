@@ -21,7 +21,7 @@ export function EventFeed({ events }: EventFeedProps) {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      scrollRef.current.scrollTop = 0
     }
   }, [events.length])
 
@@ -147,7 +147,7 @@ export function EventFeed({ events }: EventFeedProps) {
             {lang === 'sv' ? 'Väntar på MACS-aktivitet...' : 'Waiting for MACS activity...'}
           </div>
         ) : (
-          filtered.slice(-80).map(event => (
+          [...filtered].reverse().slice(0, 80).map(event => (
             <EventRow key={event.id} event={event} />
           ))
         )}
