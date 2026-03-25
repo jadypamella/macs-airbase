@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
-import { ChartBarIcon } from '@heroicons/react/24/solid'
+
 import { useSwarm } from '@/hooks/useSwarm'
 import { useSummary } from '@/hooks/useSummary'
 import { LangProvider } from '@/hooks/useLang'
