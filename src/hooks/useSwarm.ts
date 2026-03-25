@@ -87,9 +87,12 @@ export function useSwarm() {
     .filter(e => e.event_type === 'WORLD_STATE_UPDATE')
     .at(-1)?.payload?.state || null
 
-  const threatLevel: string = events
-    .filter(e => e.domain === 'THREAT' && e.payload?.threat_level)
-    .at(-1)?.payload?.threat_level || 'GREEN'
+  // Single source of truth: prefer world state, fallback to last event
+  const threatLevel: string =
+    worldState?.threat?.level ||
+    events
+      .filter(e => e.domain === 'THREAT' && e.payload?.threat_level)
+      .at(-1)?.payload?.threat_level || 'GREEN'
 
   const sendCommand = useCallback((command: Record<string, unknown>) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
