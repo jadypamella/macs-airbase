@@ -100,7 +100,7 @@ export function EventFeed({ events, onEventClick, onOpenChain, expandedEventId, 
         {mapSelectedSource && (
           <button onClick={onClearMapFilter}
             className="ml-auto flex items-center gap-1 px-1.5 py-0.5 bg-cyan-500/15 border border-cyan-500/40 text-[8px] font-bold tracking-wider text-cyan-400 hover:bg-cyan-500/25 transition-colors">
-            <span>🎯 {mapSelectedSource}</span>
+            <span>FILTER: {mapSelectedSource}</span>
             <span className="opacity-60">✕</span>
           </button>
         )}
