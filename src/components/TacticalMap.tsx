@@ -203,7 +203,8 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
   const closePanel = useCallback(() => {
     setActivePanel(null)
     onPopupClose?.()
-  }, [onPopupClose])
+    onMarkerSelect?.('')  // clear map filter
+  }, [onPopupClose, onMarkerSelect])
 
   const handleCopyAllPositions = useCallback(() => {
     // MAC positions from localStorage (saved by MapMacMarkers on drag)
