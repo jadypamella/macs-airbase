@@ -22,6 +22,7 @@ const Index = () => {
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
   const [gaugesOpen, setGaugesOpen] = useState(true)
+  const [mapSelectedSource, setMapSelectedSource] = useState<string | null>(null)
 
   useEffect(() => {
     const lastScramble = events.filter(e => e.event_type === 'SCRAMBLE_ORDER').at(-1)
@@ -86,6 +87,9 @@ const Index = () => {
               worldState={worldState}
               flyToTarget={flyToTarget}
               onPopupClose={() => setFlyToTarget(null)}
+              onMarkerSelect={(sourceId: string) => {
+                setMapSelectedSource(prev => (!sourceId || prev === sourceId) ? null : sourceId)
+              }}
             />
             <div className="relative">
               {/* Gauges toggle */}
@@ -115,7 +119,7 @@ const Index = () => {
           {/* Right sidebar */}
           <div className={`flex flex-col shrink-0 overflow-hidden bg-surface-card border-l border-white/5 transition-all duration-300 ${rightOpen ? 'w-[280px]' : 'w-0'}`}>
             <div className="flex-1 overflow-hidden w-[280px]">
-              <EventFeed events={events} onEventClick={handleEventClick} expandedEventId={expandedEventId} />
+              <EventFeed events={events} onEventClick={handleEventClick} expandedEventId={expandedEventId} mapSelectedSource={mapSelectedSource} onClearMapFilter={() => setMapSelectedSource(null)} />
             </div>
             <div className="border-t border-white/5 w-[280px]">
               <EmergenceGraph events={events} />
