@@ -8,6 +8,7 @@ import type { SwarmEvent } from '../constants'
 interface EventFeedProps {
   events: SwarmEvent[]
   onEventClick?: (event: SwarmEvent) => void
+  onOpenChain?: (eventId: string) => void
   expandedEventId?: string | null
   mapSelectedSource?: string | null
   onClearMapFilter?: () => void
@@ -16,7 +17,7 @@ interface EventFeedProps {
 const SEVERITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 const AGENT_IDS = ['OPS', 'FUEL', 'ARMING', 'MAINT', 'THREAT']
 
-export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSource, onClearMapFilter }: EventFeedProps) {
+export function EventFeed({ events, onEventClick, onOpenChain, expandedEventId, mapSelectedSource, onClearMapFilter }: EventFeedProps) {
   const { lang } = useLang()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [search, setSearch] = useState('')
@@ -25,46 +26,25 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
   const [activeAircraft, setActiveAircraft] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
   }, [events.length])
 
   const toggleSeverity = (sev: string) => {
-    setActiveSeverities(prev => {
-      const next = new Set(prev)
-      if (next.has(sev)) next.delete(sev)
-      else next.add(sev)
-      return next
-    })
+    setActiveSeverities(prev => { const next = new Set(prev); next.has(sev) ? next.delete(sev) : next.add(sev); return next })
   }
-
   const toggleAgent = (id: string) => {
-    setActiveAgents(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+    setActiveAgents(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
-
   const toggleAircraft = (id: string) => {
-    setActiveAircraft(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+    setActiveAircraft(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
 
-  // Extract aircraft IDs mentioned in events (normalize to Gripen-XX format)
   const aircraftIds = useMemo(() => {
     const ids = new Set<string>()
     for (const e of events) {
       const msg = e.payload?.message || ''
       const matches = msg.match(/Gripen-\d+/gi)
       if (matches) matches.forEach((m: string) => {
-        // Normalize: capitalize first letter
         const normalized = m.charAt(0).toUpperCase() + m.slice(1).toLowerCase()
         ids.add(normalized.replace('ripen', 'ripen'))
       })
@@ -72,7 +52,6 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
     return Array.from(ids).sort()
   }, [events])
 
-  // Count events per aircraft
   const aircraftCounts = useMemo(() => {
     const counts: Record<string, number> = {}
     for (const e of events) {
@@ -84,23 +63,16 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
   }, [events])
 
   const filtered = events.filter(e => {
-    // Map-selected source filter (agent ID or aircraft ID)
     if (mapSelectedSource) {
       const isAgent = MAC_NAMES[mapSelectedSource]
-      if (isAgent) {
-        if (e.source !== mapSelectedSource) return false
-      } else {
-        // Aircraft filter — check if message mentions the aircraft
-        const msg = (e.payload?.message || '').toLowerCase()
-        if (!msg.includes(mapSelectedSource.toLowerCase())) return false
-      }
+      if (isAgent) { if (e.source !== mapSelectedSource) return false }
+      else { const msg = (e.payload?.message || '').toLowerCase(); if (!msg.includes(mapSelectedSource.toLowerCase())) return false }
     }
     if (activeSeverities.size > 0 && !activeSeverities.has(e.severity)) return false
     if (activeAgents.size > 0 && !activeAgents.has(e.source) && e.source !== 'SYSTEM') return false
     if (activeAircraft.size > 0) {
       const msg = (e.payload?.message || '').toLowerCase()
-      const found = Array.from(activeAircraft).some(acId => msg.includes(acId.toLowerCase()))
-      if (!found) return false
+      if (!Array.from(activeAircraft).some(acId => msg.includes(acId.toLowerCase()))) return false
     }
     if (search) {
       const q = search.toLowerCase()
@@ -112,7 +84,6 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
     return true
   })
 
-  // Count severities and agents for badges
   const sevCounts: Record<string, number> = {}
   const agentCounts: Record<string, number> = {}
   for (const e of events) {
@@ -127,36 +98,24 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
           {lang === 'sv' ? 'ANSLAGSTAVLA — DIREKTSÄNDNING' : 'BULLETIN BOARD — LIVE FEED'}
         </div>
         {mapSelectedSource && (
-          <button
-            onClick={onClearMapFilter}
-            className="ml-auto flex items-center gap-1 px-1.5 py-0.5 bg-cyan-500/15 border border-cyan-500/40 text-[8px] font-bold tracking-wider text-cyan-400 hover:bg-cyan-500/25 transition-colors"
-          >
+          <button onClick={onClearMapFilter}
+            className="ml-auto flex items-center gap-1 px-1.5 py-0.5 bg-cyan-500/15 border border-cyan-500/40 text-[8px] font-bold tracking-wider text-cyan-400 hover:bg-cyan-500/25 transition-colors">
             <span>🎯 {mapSelectedSource}</span>
             <span className="opacity-60">✕</span>
           </button>
         )}
       </div>
 
-      {/* Filter row: Aircraft */}
+      {/* Aircraft filters */}
       {aircraftIds.length > 0 && (
         <div className="px-3 py-1.5 border-b border-white/5 flex items-center gap-1.5 flex-wrap">
           {aircraftIds.map(acId => {
             const isActive = activeAircraft.has(acId)
             return (
-              <button
-                key={acId}
-                onClick={() => toggleAircraft(acId)}
-                className={`flex items-center gap-1 px-1.5 py-0.5 border transition-all ${
-                  isActive
-                    ? 'border-status-green/60 bg-status-green/15'
-                    : 'border-white/5 bg-transparent hover:border-white/15'
-                }`}
-              >
+              <button key={acId} onClick={() => toggleAircraft(acId)}
+                className={`flex items-center gap-1 px-1.5 py-0.5 border transition-all ${isActive ? 'border-status-green/60 bg-status-green/15' : 'border-white/5 bg-transparent hover:border-white/15'}`}>
                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M12 3L11 7L11 9L4 13L4 15L11 13L11 17L8 19L8 21L12 19.5L16 21L16 19L13 17L13 13L20 15L20 13L13 9L13 7L12 3Z"
-                    fill={isActive ? '#a3e635' : '#64748b'}
-                  />
+                  <path d="M12 3L11 7L11 9L4 13L4 15L11 13L11 17L8 19L8 21L12 19.5L16 21L16 19L13 17L13 13L20 15L20 13L13 9L13 7L12 3Z" fill={isActive ? '#a3e635' : '#64748b'} />
                 </svg>
                 <span className="text-[8px] font-bold text-text-dim">{acId.replace('Gripen-', 'G')}</span>
                 <span className="text-[8px] text-text-dim">{aircraftCounts[acId] || 0}</span>
@@ -165,54 +124,33 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
           })}
         </div>
       )}
-      {/* Filter row: Agent icons */}
+
+      {/* Agent filters */}
       <div className="px-3 py-1.5 border-b border-white/5 flex items-center gap-1.5 flex-wrap">
         {AGENT_IDS.map(id => {
           const mac = MAC_NAMES[id]
           const isActive = activeAgents.has(id)
           return (
-            <button
-              key={id}
-              onClick={() => toggleAgent(id)}
-              className={`flex items-center gap-1 px-1.5 py-0.5 border transition-all ${
-                isActive
-                  ? 'border-cyan-500/60 bg-cyan-500/15'
-                  : 'border-white/5 bg-transparent hover:border-white/15'
-              }`}
-              title={lang === 'sv' ? mac.nameSv : mac.name}
-            >
+            <button key={id} onClick={() => toggleAgent(id)}
+              className={`flex items-center gap-1 px-1.5 py-0.5 border transition-all ${isActive ? 'border-cyan-500/60 bg-cyan-500/15' : 'border-white/5 bg-transparent hover:border-white/15'}`}
+              title={lang === 'sv' ? mac.nameSv : mac.name}>
               <mac.Icon className="w-3 h-3" style={{ color: mac.color }} />
-              <span className="text-[9px] font-bold text-text-dim">
-                {agentCounts[id] || 0}
-              </span>
+              <span className="text-[9px] font-bold text-text-dim">{agentCounts[id] || 0}</span>
             </button>
           )
         })}
       </div>
 
-      {/* Filter row: Severity dots */}
+      {/* Severity filters */}
       <div className="px-3 py-1.5 border-b border-white/5 flex items-center gap-2">
         {SEVERITY_ORDER.map(sev => {
           const count = sevCounts[sev] || 0
           const isActive = activeSeverities.has(sev)
           return (
-            <button
-              key={sev}
-              onClick={() => toggleSeverity(sev)}
-              className={`flex items-center gap-1 px-1.5 py-0.5 border transition-all ${
-                isActive
-                  ? 'border-white/20 bg-white/5'
-                  : 'border-transparent hover:border-white/10'
-              }`}
-              title={sev}
-            >
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{
-                  backgroundColor: SEVERITY_COLORS[sev],
-                  opacity: isActive || activeSeverities.size === 0 ? 1 : 0.3,
-                }}
-              />
+            <button key={sev} onClick={() => toggleSeverity(sev)}
+              className={`flex items-center gap-1 px-1.5 py-0.5 border transition-all ${isActive ? 'border-white/20 bg-white/5' : 'border-transparent hover:border-white/10'}`}
+              title={sev}>
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: SEVERITY_COLORS[sev], opacity: isActive || activeSeverities.size === 0 ? 1 : 0.3 }} />
               <span className="text-[9px] font-bold text-text-dim">{count}</span>
             </button>
           )
@@ -223,13 +161,9 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
       <div className="px-3 py-1.5 border-b border-white/5">
         <div className="flex items-center gap-1.5 bg-surface-primary/50 border border-white/5 px-2 py-1">
           <MagnifyingGlassIcon className="w-3.5 h-3.5 text-text-dim" />
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+          <input type="text" value={search} onChange={e => setSearch(e.target.value)}
             placeholder={lang === 'sv' ? 'Sök händelser...' : 'Search events...'}
-            className="bg-transparent text-[10px] text-text-primary placeholder:text-text-dim outline-none w-full font-mono"
-          />
+            className="bg-transparent text-[10px] text-text-primary placeholder:text-text-dim outline-none w-full font-mono" />
         </div>
       </div>
 
@@ -241,7 +175,7 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
           </div>
         ) : (
           [...filtered].reverse().slice(0, 80).map(event => (
-            <EventRow key={event.id} event={event} onClick={onEventClick} expanded={expandedEventId === event.id} />
+            <EventRow key={event.id} event={event} onClick={onEventClick} onOpenChain={onOpenChain} expanded={expandedEventId === event.id} />
           ))
         )}
       </div>
