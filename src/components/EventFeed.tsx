@@ -9,12 +9,14 @@ interface EventFeedProps {
   events: SwarmEvent[]
   onEventClick?: (event: SwarmEvent) => void
   expandedEventId?: string | null
+  mapSelectedSource?: string | null
+  onClearMapFilter?: () => void
 }
 
 const SEVERITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 const AGENT_IDS = ['OPS', 'FUEL', 'ARMING', 'MAINT', 'THREAT']
 
-export function EventFeed({ events, onEventClick, expandedEventId }: EventFeedProps) {
+export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSource, onClearMapFilter }: EventFeedProps) {
   const { lang } = useLang()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [search, setSearch] = useState('')
