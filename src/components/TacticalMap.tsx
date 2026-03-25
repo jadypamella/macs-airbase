@@ -253,7 +253,7 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         <DispersalRoutes active={dispersalActive} />
         <MapMacMarkers agents={agents} draggable={editMode} onAgentClick={handleAgentClick} />
         <MapPulse pulseRings={pulseRings} />
-        <ThreatTracks tracks={threatTracks} />
+        {/* <ThreatTracks tracks={threatTracks} /> */}
         <RadarSweep ewJamming={ewJamming} />
         <AircraftMarkers
           aircraft={worldState?.aircraft}
