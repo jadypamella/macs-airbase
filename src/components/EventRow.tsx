@@ -57,15 +57,8 @@ export function EventRow({ event, onClick, onOpenChain, expanded = false }: Even
         {/* Compensation badge */}
         {isCompensation && (
           <span className="text-[7px] font-bold tracking-wider px-1 py-0.5 bg-status-amber/15 border border-status-amber/40 text-status-amber">
-            ⚡ {lang === 'sv' ? 'KOMPENSERAR' : 'COMPENSATING'}
-            {compensatingFor ? ` → ${compensatingFor}` : ''}
-          </span>
-        )}
-
-        {/* AI mode badge */}
-        {reasoningMode && (
-          <span className="text-[7px] font-bold tracking-wider px-1 py-0.5 text-purple-400 bg-purple-500/10 border border-purple-500/30">
-            {reasoningMode}
+            {lang === 'sv' ? 'KOMPENSERAR' : 'COMPENSATING'}
+            {compensatingFor ? ` ${compensatingFor}` : ''}
           </span>
         )}
 
