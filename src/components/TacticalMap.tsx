@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { supabase } from '@/integrations/supabase/client'
 import type { MapRef } from 'react-map-gl/maplibre'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import Map from 'react-map-gl/maplibre'
@@ -332,13 +333,33 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
           {!scrambleSim.isRunning ? (
             <ScrambleSelector
               aircraft={worldState?.aircraft}
-              onScramble={(ids) => scrambleSim.startScramble(ids)}
+              onScramble={(ids) => {
+                scrambleSim.startScramble(ids)
+                supabase.functions.invoke('api-proxy', {
+                  body: {
+                    endpoint: '/api/control',
+                    method: 'POST',
+                    body: { action: 'scramble', aircraft: ids, bearing: 45, roe: 'WEAPONS_HOLD' },
+                  },
+                }).then(({ data }) => console.log('Scramble sent to backend:', data))
+                  .catch((e) => console.error('Scramble backend error:', e))
+              }}
             />
           ) : (
             <>
               {!scrambleSim.isReturning ? (
-                <button
-                  onClick={scrambleSim.recallScramble}
+                 <button
+                  onClick={() => {
+                    scrambleSim.recallScramble()
+                    supabase.functions.invoke('api-proxy', {
+                      body: {
+                        endpoint: '/api/control',
+                        method: 'POST',
+                        body: { action: 'recall', reason: 'Command recall order' },
+                      },
+                    }).then(({ data }) => console.log('Recall sent to backend:', data))
+                      .catch((e) => console.error('Recall backend error:', e))
+                  }}
                   className="px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase border transition-colors bg-amber-500/20 border-amber-500/50 text-amber-400 hover:bg-amber-500/30"
                 >
                   RECALL
