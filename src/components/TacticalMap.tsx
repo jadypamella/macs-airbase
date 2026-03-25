@@ -29,6 +29,7 @@ interface TacticalMapProps {
   worldState: WorldState | null
   flyToTarget: { lng: number; lat: number; event: SwarmEvent } | null
   onPopupClose?: () => void
+  onMarkerSelect?: (sourceId: string) => void
 }
 
 const PULSE_COLORS: Record<string, string> = {
@@ -44,7 +45,7 @@ type ActivePanel =
   | { type: 'event'; event: SwarmEvent; pos: { x: number; y: number } }
   | { type: 'aircraft'; aircraft: AircraftState; pos: { x: number; y: number } }
 
-export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupClose }: TacticalMapProps) {
+export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupClose, onMarkerSelect }: TacticalMapProps) {
   const [pulseRings, setPulseRings] = useState<PulseRing[]>([])
   const [threatTracks, setThreatTracks] = useState<ThreatTrack[]>([])
   const [ewJamming, setEwJamming] = useState(false)
@@ -185,7 +186,8 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
       aircraft: ac,
       pos: screenPos,
     })
-  }, [])
+    onMarkerSelect?.(ac.id)
+  }, [onMarkerSelect])
 
   const handleAgentClick = useCallback((agentId: string, screenPos: { x: number; y: number }) => {
     const latest = latestAgentEvents[agentId]
@@ -195,12 +197,14 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
       event: latest,
       pos: screenPos,
     })
-  }, [latestAgentEvents])
+    onMarkerSelect?.(agentId)
+  }, [latestAgentEvents, onMarkerSelect])
 
   const closePanel = useCallback(() => {
     setActivePanel(null)
     onPopupClose?.()
-  }, [onPopupClose])
+    onMarkerSelect?.('')  // clear map filter
+  }, [onPopupClose, onMarkerSelect])
 
   const handleCopyAllPositions = useCallback(() => {
     // MAC positions from localStorage (saved by MapMacMarkers on drag)
