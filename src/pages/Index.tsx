@@ -80,6 +80,7 @@ const Index = () => {
           connected={connected}
           eventCount={events.length}
           criticalCount={criticalCount}
+          onOpenSummary={() => setShowSummary(true)}
         />
 
         <div className="flex flex-1 min-h-0 relative">
@@ -150,14 +151,8 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Summary dashboard toggle button */}
-        <button
-          onClick={() => setShowSummary(true)}
-          className="fixed bottom-14 right-4 z-30 flex items-center gap-1.5 px-3 py-1.5 bg-surface-card/90 border border-white/10 hover:border-cyan-500/40 hover:bg-surface-elevated/80 transition-colors"
-        >
-          <ChartBarIcon className="w-4 h-4 text-cyan-400" />
-          <span className="text-[9px] font-bold tracking-[0.15em] text-text-muted uppercase">SUMMARY</span>
-        </button>
+
+
 
         <TimelineBar events={events} scenario={scenario} />
         <ScrambleOverlay active={scrambleActive} />
