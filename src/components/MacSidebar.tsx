@@ -2,6 +2,7 @@ import { MacCard } from './MacCard'
 import { SEVERITY_COLORS, SEVERITY_LABELS_SV } from '../constants'
 import { useLang } from '@/hooks/useLang'
 import type { AgentState, SwarmEvent } from '../constants'
+import type { SummaryData } from '@/hooks/useSummary'
 
 const SEVERITY_LABELS_EN: Record<string, string> = {
   CRITICAL: 'CRITICAL',
@@ -15,13 +16,15 @@ const SEVERITY_LABELS_EN: Record<string, string> = {
 interface MacSidebarProps {
   agents: Record<string, AgentState>
   events: SwarmEvent[]
+  summary?: SummaryData | null
   onKill?: (agentId: string) => void
   onRevive?: (agentId: string) => void
+  onOpenReasoning?: (agentId: string) => void
 }
 
 const AGENT_IDS = ['OPS', 'FUEL', 'ARMING', 'MAINT', 'THREAT']
 
-export function MacSidebar({ agents, events, onKill, onRevive }: MacSidebarProps) {
+export function MacSidebar({ agents, events, summary, onKill, onRevive, onOpenReasoning }: MacSidebarProps) {
   const { lang } = useLang()
   const severityCounts: Record<string, number> = {}
   for (const e of events) {
@@ -39,9 +42,21 @@ export function MacSidebar({ agents, events, onKill, onRevive }: MacSidebarProps
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
-        {AGENT_IDS.map(id => (
-          <MacCard key={id} agentId={id} agent={agents[id]} onKill={onKill} onRevive={onRevive} />
-        ))}
+        {AGENT_IDS.map(id => {
+          const summaryAgent = summary?.agents?.[id]
+          return (
+            <MacCard
+              key={id}
+              agentId={id}
+              agent={agents[id]}
+              mode={summaryAgent?.mode}
+              secondsSinceAction={summaryAgent?.seconds_since_action}
+              onKill={onKill}
+              onRevive={onRevive}
+              onOpenReasoning={onOpenReasoning}
+            />
+          )
+        })}
       </div>
 
       <div className="px-3 py-2 border-t border-white/5">
