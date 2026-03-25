@@ -87,8 +87,8 @@ const Index = () => {
               worldState={worldState}
               flyToTarget={flyToTarget}
               onPopupClose={() => setFlyToTarget(null)}
-              onMarkerSelect={(sourceId) => {
-                setMapSelectedSource(prev => prev === sourceId ? null : sourceId)
+              onMarkerSelect={(sourceId: string) => {
+                setMapSelectedSource(prev => (!sourceId || prev === sourceId) ? null : sourceId)
               }}
             />
             <div className="relative">
