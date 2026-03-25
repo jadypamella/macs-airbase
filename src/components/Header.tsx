@@ -1,4 +1,4 @@
-import { ShieldExclamationIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/solid'
+import { ShieldExclamationIcon, CheckCircleIcon, ExclamationTriangleIcon, ChartBarIcon } from '@heroicons/react/24/solid'
 import { useLang } from '@/hooks/useLang'
 
 interface HeaderProps {
@@ -7,6 +7,7 @@ interface HeaderProps {
   connected: boolean
   eventCount: number
   criticalCount: number
+  onOpenSummary?: () => void
 }
 
 const SCENARIO_NAMES: Record<string, { sv: string; en: string }> = {
@@ -27,7 +28,7 @@ const THREAT_LABELS: Record<string, { sv: string; en: string }> = {
   RED:   { sv: 'RÖD', en: 'RED' },
 }
 
-export function Header({ scenario, threatLevel, connected, eventCount, criticalCount }: HeaderProps) {
+export function Header({ scenario, threatLevel, connected, eventCount, criticalCount, onOpenSummary }: HeaderProps) {
   const { lang, toggle } = useLang()
   // Use API threat level directly — no overrides
   const tc = THREAT_COLORS[threatLevel] || THREAT_COLORS.GREEN
@@ -64,6 +65,15 @@ export function Header({ scenario, threatLevel, connected, eventCount, criticalC
           </div>
         </div>
       </div>
+
+      {/* Summary button */}
+      <button
+        onClick={onOpenSummary}
+        className="flex items-center gap-1.5 px-3 py-1 border border-white/10 hover:border-cyan-500/40 hover:bg-surface-elevated/80 transition-colors"
+      >
+        <ChartBarIcon className="w-4 h-4 text-cyan-400" />
+        <span className="text-[10px] font-bold tracking-[0.15em] text-text-muted uppercase">SUMMARY</span>
+      </button>
 
       {criticalCount > 0 && (
         <div className="flex items-center gap-1.5 px-2 py-1 bg-status-red/20 animate-glow-critical">
