@@ -84,6 +84,17 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
   }, [events])
 
   const filtered = events.filter(e => {
+    // Map-selected source filter (agent ID or aircraft ID)
+    if (mapSelectedSource) {
+      const isAgent = MAC_NAMES[mapSelectedSource]
+      if (isAgent) {
+        if (e.source !== mapSelectedSource) return false
+      } else {
+        // Aircraft filter — check if message mentions the aircraft
+        const msg = (e.payload?.message || '').toLowerCase()
+        if (!msg.includes(mapSelectedSource.toLowerCase())) return false
+      }
+    }
     if (activeSeverities.size > 0 && !activeSeverities.has(e.severity)) return false
     if (activeAgents.size > 0 && !activeAgents.has(e.source) && e.source !== 'SYSTEM') return false
     if (activeAircraft.size > 0) {
@@ -111,10 +122,19 @@ export function EventFeed({ events, onEventClick, expandedEventId, mapSelectedSo
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-3 py-2 border-b border-white/5">
+      <div className="px-3 py-2 border-b border-white/5 flex items-center gap-2">
         <div className="text-[10px] font-bold tracking-[0.2em] text-text-muted uppercase">
           {lang === 'sv' ? 'ANSLAGSTAVLA — DIREKTSÄNDNING' : 'BULLETIN BOARD — LIVE FEED'}
         </div>
+        {mapSelectedSource && (
+          <button
+            onClick={onClearMapFilter}
+            className="ml-auto flex items-center gap-1 px-1.5 py-0.5 bg-cyan-500/15 border border-cyan-500/40 text-[8px] font-bold tracking-wider text-cyan-400 hover:bg-cyan-500/25 transition-colors"
+          >
+            <span>🎯 {mapSelectedSource}</span>
+            <span className="opacity-60">✕</span>
+          </button>
+        )}
       </div>
 
       {/* Filter row: Aircraft */}
