@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { GlobeAltIcon } from '@heroicons/react/24/solid'
 import { MAC_NAMES, SEVERITY_COLORS, SEVERITY_LABELS_SV } from '../constants'
 import { useLang } from '@/hooks/useLang'
@@ -12,10 +11,11 @@ const SEVERITY_LABELS_EN: Record<string, string> = {
 interface EventRowProps {
   event: SwarmEvent
   onClick?: (event: SwarmEvent) => void
+  onOpenChain?: (eventId: string) => void
   expanded?: boolean
 }
 
-export function EventRow({ event, onClick, expanded = false }: EventRowProps) {
+export function EventRow({ event, onClick, onOpenChain, expanded = false }: EventRowProps) {
   const { lang } = useLang()
   const mac = MAC_NAMES[event.source]
   const severityColor = SEVERITY_COLORS[event.severity] || '#4b5563'
@@ -25,7 +25,14 @@ export function EventRow({ event, onClick, expanded = false }: EventRowProps) {
   const time = new Date(event.timestamp * 1000).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
   const message = event.payload?.message || event.event_type
 
-  const rowBg = event.severity === 'CRITICAL' ? 'bg-status-red/5'
+  const isCompensation = event.event_type === 'AGENT_COMPENSATION'
+  const compensatingFor = event.payload?.details?.compensating_for
+
+  // Reasoning context from payload
+  const reasoningMode = event.payload?.reasoning_context?.mode
+
+  const rowBg = isCompensation ? 'bg-status-amber/8 border-l-2 border-l-status-amber/60'
+    : event.severity === 'CRITICAL' ? 'bg-status-red/5'
     : event.event_type === 'ACTION_TAKEN' ? 'bg-ops/5'
     : ''
 
@@ -46,6 +53,22 @@ export function EventRow({ event, onClick, expanded = false }: EventRowProps) {
             {mac ? (lang === 'sv' ? mac.nameSv : mac.name) : 'SYSTEM'}
           </span>
         </div>
+
+        {/* Compensation badge */}
+        {isCompensation && (
+          <span className="text-[7px] font-bold tracking-wider px-1 py-0.5 bg-status-amber/15 border border-status-amber/40 text-status-amber">
+            ⚡ {lang === 'sv' ? 'KOMPENSERAR' : 'COMPENSATING'}
+            {compensatingFor ? ` → ${compensatingFor}` : ''}
+          </span>
+        )}
+
+        {/* AI mode badge */}
+        {reasoningMode && (
+          <span className="text-[7px] font-bold tracking-wider px-1 py-0.5 text-purple-400 bg-purple-500/10 border border-purple-500/30">
+            {reasoningMode}
+          </span>
+        )}
+
         <span
           className="text-[8px] font-bold tracking-wider px-1 py-0.5 ml-auto"
           style={{ color: severityColor, backgroundColor: `${severityColor}15` }}
@@ -57,10 +80,25 @@ export function EventRow({ event, onClick, expanded = false }: EventRowProps) {
         {message}
       </p>
       {expanded && (
-        <div className="flex gap-3 mt-1 text-[8px] text-text-dim">
-          <span>{event.event_type}</span>
-          <span>{event.domain}</span>
-          {event.tags?.length ? <span>{event.tags.join(', ')}</span> : null}
+        <div className="mt-1 space-y-1">
+          <div className="flex gap-3 text-[8px] text-text-dim">
+            <span>{event.event_type}</span>
+            <span>{event.domain}</span>
+            {event.tags?.length ? <span>{event.tags.join(', ')}</span> : null}
+          </div>
+
+          {/* Chain link for events with references */}
+          {event.payload?.references?.length > 0 && onOpenChain && (
+            <div className="flex items-center gap-1 mt-1">
+              <span className="text-[8px] text-text-dim">{lang === 'sv' ? 'Kedja:' : 'Chain:'}</span>
+              <button
+                onClick={(e) => { e.stopPropagation(); onOpenChain(event.id) }}
+                className="text-[8px] font-mono text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                {lang === 'sv' ? 'Visa kausal kedja →' : 'View causal chain →'}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
