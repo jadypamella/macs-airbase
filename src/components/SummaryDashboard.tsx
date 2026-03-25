@@ -121,7 +121,7 @@ export function SummaryDashboard({ summary, onClose }: Props) {
                     <span className="text-text-muted">5m: <span className="text-text-primary font-bold">{domain.events_5min}</span></span>
                     <span className="text-text-muted">30m: <span className="text-text-primary font-bold">{domain.events_30min}</span></span>
                     {domain.compensations > 0 && (
-                      <span className="text-status-amber font-bold">⚡ {domain.compensations} comp.</span>
+                      <span className="text-status-amber font-bold">{domain.compensations} COMP</span>
                     )}
                   </div>
                   {/* Mini activity bar */}
