@@ -80,8 +80,8 @@ export function EventRow({ event, onClick, onOpenChain, expanded = false }: Even
             {event.tags?.length ? <span>{event.tags.join(', ')}</span> : null}
           </div>
 
-          {/* Chain link for events with references */}
-          {event.payload?.references?.length > 0 && onOpenChain && (
+          {/* Chain link — available for agent events, not SYSTEM */}
+          {onOpenChain && event.source !== 'SYSTEM' && (
             <div className="flex items-center gap-1 mt-1">
               <span className="text-[8px] text-text-dim">{lang === 'sv' ? 'Kedja:' : 'Chain:'}</span>
               <button
