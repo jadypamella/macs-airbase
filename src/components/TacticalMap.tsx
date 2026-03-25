@@ -248,10 +248,10 @@ export function TacticalMap({ events, agents, worldState, flyToTarget, onPopupCl
         mapStyle={activeStyle as any}
       >
         <MapZones zoneStatuses={zoneStatuses} />
-        <RunwayRoutes />
+        {/* <RunwayRoutes /> */}
         <MapBuildings3D visible={true} />
         <ThreatHeatmap events={events} />
-        <DispersalRoutes active={dispersalActive} />
+        {/* <DispersalRoutes active={dispersalActive} /> */}
         <MapMacMarkers agents={agents} draggable={editMode} onAgentClick={handleAgentClick} />
         <MapPulse pulseRings={pulseRings} />
         {/* <ThreatTracks tracks={threatTracks} /> */}
