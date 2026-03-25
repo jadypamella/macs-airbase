@@ -59,19 +59,7 @@ export function MacCard({ agentId, agent, mode, secondsSinceAction, onKill, onRe
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          {/* AI Mode badge */}
-          {mode && (
-            <span
-              className="text-[7px] font-bold tracking-wider px-1 py-0.5 uppercase"
-              style={{
-                color: MODE_COLORS[mode] || '#6b7280',
-                background: `${MODE_COLORS[mode] || '#6b7280'}20`,
-                border: `1px solid ${MODE_COLORS[mode] || '#6b7280'}40`,
-              }}
-            >
-              {mode}
-            </span>
-          )}
+          {/* AI Mode badge — hidden, data still available */}
           {isOffline && <span className="w-2 h-2 rounded-full bg-status-red" />}
           {!isOffline && (agent?.status === 'online' || isActive) && <span className="w-2 h-2 rounded-full bg-status-green" />}
           <span className={`text-[9px] font-bold tracking-wider ${statusColor}`}>

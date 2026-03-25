@@ -76,9 +76,9 @@ const GAUGES: GaugeDef[] = [
   },
   {
     Icon: ShieldExclamationIcon, labelSv: 'HOTBILD', labelEn: 'THREAT',
-    getValue: (ws, cc) => { const l = ws.threat?.level ?? 'GREEN'; return (cc && cc > 0) ? 'RED' : l },
-    getColor: (ws, cc) => { if (cc && cc > 0) return '#ef4444'; const l = ws.threat?.level ?? 'GREEN'; return l === 'RED' ? '#ef4444' : l === 'AMBER' ? '#f59e0b' : '#22c55e' },
-    getPct: (ws, cc) => { if (cc && cc > 0) return 100; const l = ws.threat?.level ?? 'GREEN'; return l === 'RED' ? 100 : l === 'AMBER' ? 60 : 20 },
+    getValue: ws => ws.threat?.level ?? 'GREEN',
+    getColor: ws => { const l = ws.threat?.level ?? 'GREEN'; return l === 'RED' ? '#ef4444' : l === 'AMBER' ? '#f59e0b' : '#22c55e' },
+    getPct: ws => { const l = ws.threat?.level ?? 'GREEN'; return l === 'RED' ? 100 : l === 'AMBER' ? 60 : 20 },
   },
   {
     Icon: SignalIcon, labelSv: 'RADAR', labelEn: 'RADAR',
